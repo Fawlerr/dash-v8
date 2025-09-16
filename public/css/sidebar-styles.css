@@ -35,6 +35,11 @@
     transition: transform 0.3s ease-in-out;
 }
 
+/* Classe para garantir que a sidebar inicie oculta no mobile */
+.sidebar-mobile-hidden {
+    transform: translateX(-100%);
+}
+
 .sidebar-hidden {
     transform: translateX(-100%);
 }

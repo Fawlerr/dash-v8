@@ -73,10 +73,12 @@ class SidebarLoader {
                 if (isOpen) {
                     // Fechar sidebar
                     sidebar.classList.remove('show');
+                    sidebar.classList.add('sidebar-mobile-hidden');
                     sidebarOverlay.classList.remove('show');
                 } else {
                     // Abrir sidebar
                     sidebar.classList.add('show');
+                    sidebar.classList.remove('sidebar-mobile-hidden');
                     sidebarOverlay.classList.add('show');
                 }
             });
@@ -86,6 +88,7 @@ class SidebarLoader {
         if (closeSidebarBtn) {
             closeSidebarBtn.addEventListener('click', () => {
                 sidebar.classList.remove('show');
+                sidebar.classList.add('sidebar-mobile-hidden');
                 sidebarOverlay.classList.remove('show');
             });
         }
@@ -94,6 +97,7 @@ class SidebarLoader {
         if (sidebarOverlay) {
             sidebarOverlay.addEventListener('click', () => {
                 sidebar.classList.remove('show');
+                sidebar.classList.add('sidebar-mobile-hidden');
                 sidebarOverlay.classList.remove('show');
             });
         }
@@ -104,6 +108,7 @@ class SidebarLoader {
             link.addEventListener('click', () => {
                 if (window.innerWidth <= 768) {
                     sidebar.classList.remove('show');
+                    sidebar.classList.add('sidebar-mobile-hidden');
                     sidebarOverlay.classList.remove('show');
                 }
             });
@@ -113,6 +118,7 @@ class SidebarLoader {
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 sidebar.classList.remove('show');
+                sidebar.classList.add('sidebar-mobile-hidden');
                 sidebarOverlay.classList.remove('show');
             }
         });
@@ -121,11 +127,12 @@ class SidebarLoader {
         const handleResize = () => {
             if (window.innerWidth > 768) {
                 // Desktop: sidebar sempre visível
-                sidebar.classList.remove('show');
+                sidebar.classList.remove('show', 'sidebar-mobile-hidden');
                 sidebarOverlay.classList.remove('show');
             } else {
                 // Mobile: sidebar sempre oculta por padrão
                 sidebar.classList.remove('show');
+                sidebar.classList.add('sidebar-mobile-hidden');
                 sidebarOverlay.classList.remove('show');
             }
         };
@@ -134,6 +141,7 @@ class SidebarLoader {
         
         // Garantir que a sidebar sempre inicie fechada
         sidebar.classList.remove('show');
+        sidebar.classList.add('sidebar-mobile-hidden');
         sidebarOverlay.classList.remove('show');
         
         // Executar ajuste inicial
