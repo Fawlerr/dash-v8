@@ -69,8 +69,16 @@ class SidebarLoader {
         // Toggle sidebar no mobile
         if (mobileMenuBtn) {
             mobileMenuBtn.addEventListener('click', () => {
-                sidebar.classList.toggle('show');
-                sidebarOverlay.classList.toggle('show');
+                const isOpen = sidebar.classList.contains('show');
+                if (isOpen) {
+                    // Fechar sidebar
+                    sidebar.classList.remove('show');
+                    sidebarOverlay.classList.remove('show');
+                } else {
+                    // Abrir sidebar
+                    sidebar.classList.add('show');
+                    sidebarOverlay.classList.add('show');
+                }
             });
         }
 
@@ -112,23 +120,24 @@ class SidebarLoader {
         // Ajustar sidebar baseado no tamanho da tela
         const handleResize = () => {
             if (window.innerWidth > 768) {
+                // Desktop: sidebar sempre visível
                 sidebar.classList.remove('show');
                 sidebarOverlay.classList.remove('show');
             } else {
-                // No mobile, garantir que a sidebar inicie oculta
+                // Mobile: sidebar sempre oculta por padrão
                 sidebar.classList.remove('show');
                 sidebarOverlay.classList.remove('show');
             }
         };
 
         window.addEventListener('resize', handleResize);
-        handleResize(); // Executar uma vez no carregamento
         
-        // Garantir que no mobile a sidebar inicie oculta
-        if (window.innerWidth <= 768) {
-            sidebar.classList.remove('show');
-            sidebarOverlay.classList.remove('show');
-        }
+        // Garantir que a sidebar sempre inicie fechada
+        sidebar.classList.remove('show');
+        sidebarOverlay.classList.remove('show');
+        
+        // Executar ajuste inicial
+        handleResize();
     }
 
     // Inicializa ícones Lucide

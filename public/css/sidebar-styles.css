@@ -144,9 +144,13 @@
         transform: translateX(0);
     }
     
-    /* Garantir que a sidebar inicie oculta no mobile */
-    #sidebar:not(.show) {
-        transform: translateX(-100%);
+    /* Garantir que a sidebar inicie sempre oculta no mobile */
+    #sidebar {
+        transform: translateX(-100%) !important;
+    }
+    
+    #sidebar.show {
+        transform: translateX(0) !important;
     }
     
     .main-content {
