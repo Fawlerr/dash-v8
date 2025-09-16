@@ -144,6 +144,11 @@
         transform: translateX(0);
     }
     
+    /* Garantir que a sidebar inicie oculta no mobile */
+    #sidebar:not(.show) {
+        transform: translateX(-100%);
+    }
+    
     .main-content {
         margin-left: 0;
         padding: 60px 20px 20px;

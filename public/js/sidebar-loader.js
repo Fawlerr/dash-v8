@@ -114,11 +114,21 @@ class SidebarLoader {
             if (window.innerWidth > 768) {
                 sidebar.classList.remove('show');
                 sidebarOverlay.classList.remove('show');
+            } else {
+                // No mobile, garantir que a sidebar inicie oculta
+                sidebar.classList.remove('show');
+                sidebarOverlay.classList.remove('show');
             }
         };
 
         window.addEventListener('resize', handleResize);
         handleResize(); // Executar uma vez no carregamento
+        
+        // Garantir que no mobile a sidebar inicie oculta
+        if (window.innerWidth <= 768) {
+            sidebar.classList.remove('show');
+            sidebarOverlay.classList.remove('show');
+        }
     }
 
     // Inicializa ícones Lucide
