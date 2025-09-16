@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extrator de Leads - WhatsApp Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide React Icons via CDN -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <!-- Sidebar dinâmica -->
+    <script src="/js/sidebar-loader.js"></script>
+    <!-- Verificação de autenticação -->
+    <script src="/js/auth-check.js"></script>
+    <!-- Dashboard enhancements -->
+    <link rel="stylesheet" href="/css/tech-effects.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%); 
+            min-height: 100vh; 
+            color: #ffffff; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        .header { 
+            background: rgba(26, 26, 46, 0.95); 
+            backdrop-filter: blur(10px); 
+            border-radius: 20px; 
+            padding: 30px; 
+            margin-bottom: 30px; 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); 
+            text-align: center; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+        
+        .header h1 {
+            color: #ffffff;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            color: #b8b8b8;
+            font-size: 1.1rem;
+        }
+        
+        .main-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 0;
+            width: 100%;
+            max-width: 100%;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+            padding: 20px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 60px 20px 20px;
+            }
+            
+            .main-content-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+        
+        .upload-section, .results-section {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .upload-area {
+            border: 3px dashed #00d4ff;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(0, 212, 255, 0.05);
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .upload-area:hover {
+            border-color: #0099cc;
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        .upload-area.dragover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+            transform: scale(1.02);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: #00d4ff;
+            margin-bottom: 20px;
+        }
+        
+        .upload-content h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+        
+        .upload-content p {
+            color: #b8b8b8;
+            margin-bottom: 20px;
+        }
+        
+        .upload-btn {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4);
+        }
+        
+        .file-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #00d4ff;
+        }
+        
+        .file-details {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .file-details i {
+            font-size: 1.5rem;
+            color: #00d4ff;
+        }
+        
+        .file-text {
+            flex: 1;
+        }
+        
+        .file-name {
+            display: block;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+        
+        .file-size {
+            font-size: 0.9rem;
+            color: #b8b8b8;
+        }
+        
+        .remove-file {
+            background: #ff4757;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .remove-file:hover {
+            background: #ff3742;
+            transform: scale(1.1);
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .results-header h3 {
+            color: #ffffff;
+            font-size: 1.3rem;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 212, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: #00d4ff;
+            font-weight: 600;
+        }
+        
+        .results-container {
+            flex: 1;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            background: rgba(15, 15, 35, 0.5);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #b8b8b8;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        
+        .lead-item {
+            background: rgba(0, 212, 255, 0.1);
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border-left: 4px solid #00d4ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .lead-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 10px rgba(0, 212, 255, 0.2);
+        }
+        
+        .lead-number {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .lead-index {
+            background: #00d4ff;
+            color: #000;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .download-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .download-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+        }
+        
+        .download-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .download-options {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .download-options label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            color: #b8b8b8;
+        }
+        
+        .download-options label:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+        
+        .download-options input[type="radio"] {
+            margin: 0;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .results-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .results-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        .results-container::-webkit-scrollbar-thumb {
+            background: #00d4ff;
+            border-radius: 4px;
+        }
+        
+        .results-container::-webkit-scrollbar-thumb:hover {
+            background: #0099cc;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .lead-item {
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .lead-details {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+        
+        .lead-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .copy-btn {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+            border: 1px solid #00d4ff;
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .copy-btn:hover {
+            background: #00d4ff;
+            color: #000;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar será carregada dinamicamente pelo sidebar-loader.js -->
+
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+        <div class="container">
+            <div class="header">
+                <h1><i class="fas fa-phone"></i> Extrator de Leads</h1>
+                <p>Extraia e formate números de telefone de arquivos CSV/TXT</p>
+            </div>
+
+            <div class="main-content-grid">
+                <!-- Área de Upload -->
+                <div class="upload-section">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <h3>Arraste e solte seu arquivo aqui</h3>
+                            <p>ou clique para selecionar</p>
+                            <input type="file" id="fileInput" accept=".csv,.txt" hidden>
+                            <button class="upload-btn" type="button" id="uploadBtn">
+                                <i class="fas fa-folder-open"></i> Selecionar Arquivo
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <div class="file-details">
+                            <i class="fas fa-file"></i>
+                            <div class="file-text">
+                                <span class="file-name" id="fileName"></span>
+                                <span class="file-size" id="fileSize"></span>
+                            </div>
+                            <button class="remove-file" onclick="removeFile()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Área de Visualização -->
+                <div class="results-section">
+                    <div class="results-header">
+                        <h3><i class="fas fa-list"></i> Leads Extraídos</h3>
+                        <div class="stats">
+                            <span class="stat-item">
+                                <i class="fas fa-phone"></i>
+                                <span id="totalLeads">0</span> números
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="results-container" id="resultsContainer">
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>Faça upload de um arquivo para ver os leads extraídos</p>
+                        </div>
+                    </div>
+
+                    <div class="download-section" id="downloadSection" style="display: none;">
+                        <button class="download-btn" onclick="downloadLeads()">
+                            <i class="fas fa-download"></i> Download Leads
+                        </button>
+                        <div class="download-options">
+                            <label>
+                                <input type="radio" name="format" value="txt" checked>
+                                <span>Arquivo TXT</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="format" value="csv">
+                                <span>Arquivo CSV</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Processamento -->
+    <div class="modal" id="processingModal">
+        <div class="modal-content">
+            <div class="spinner"></div>
+            <p>Processando arquivo...</p>
+        </div>
+    </div>
+
+    <script src="js/leads-extractor.js"></script>
+</body>
+</html>

@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campanhas - WhatsApp Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide React Icons via CDN -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <!-- Sidebar dinâmica -->
+    <script src="/js/sidebar-loader.js"></script>
+    <!-- Verificação de autenticação -->
+    <script src="/js/auth-check.js"></script>
+    <!-- Dashboard enhancements -->
+    <link rel="stylesheet" href="/css/tech-effects.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%); 
+            min-height: 100vh; 
+            color: #ffffff; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        .header { 
+            background: rgba(26, 26, 46, 0.95); 
+            backdrop-filter: blur(10px); 
+            border-radius: 20px; 
+            padding: 30px; 
+            margin-bottom: 30px; 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); 
+            text-align: center; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+        
+        .header h1 {
+            color: #ffffff;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            color: #b8b8b8;
+            font-size: 1.1rem;
+        }
+        
+        .main-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 0;
+            width: 100%;
+            max-width: 100%;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+            padding: 20px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 60px 20px 20px;
+            }
+            
+            .main-content-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+        
+        .campaigns-section, .add-campaign-section {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-header h3 {
+            color: #ffffff;
+            font-size: 1.3rem;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 212, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: #00d4ff;
+            font-weight: 600;
+        }
+        
+        .campaigns-list {
+            flex: 1;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            background: rgba(15, 15, 35, 0.5);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #b8b8b8;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        
+        .campaign-item {
+            background: rgba(0, 212, 255, 0.1);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 4px solid #00d4ff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .campaign-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 10px rgba(0, 212, 255, 0.2);
+        }
+        
+        .campaign-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .campaign-name {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 1.1rem;
+        }
+        
+        .campaign-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .action-btn.delete:hover {
+            background: #ff4757;
+        }
+        
+        .campaign-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #b8b8b8;
+            font-size: 0.9rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffffff;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+        
+        .form-group input::placeholder {
+            color: #666;
+        }
+        
+        .file-upload-area {
+            border: 3px dashed #00d4ff;
+            border-radius: 10px;
+            padding: 30px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(0, 212, 255, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .file-upload-area:hover {
+            border-color: #0099cc;
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        .file-upload-area.dragover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+            transform: scale(1.02);
+        }
+        
+        .upload-icon {
+            font-size: 2rem;
+            color: #00d4ff;
+            margin-bottom: 15px;
+        }
+        
+        .upload-content h4 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+        
+        .upload-content p {
+            color: #b8b8b8;
+            margin-bottom: 15px;
+        }
+        
+        .upload-btn {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4);
+        }
+        
+        .file-info {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #00d4ff;
+            display: none;
+        }
+        
+        .file-details {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .file-details i {
+            font-size: 1.2rem;
+            color: #00d4ff;
+        }
+        
+        .file-text {
+            flex: 1;
+        }
+        
+        .file-name {
+            display: block;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 3px;
+        }
+        
+        .file-size {
+            font-size: 0.8rem;
+            color: #b8b8b8;
+        }
+        
+        .remove-file {
+            background: #ff4757;
+            color: white;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .remove-file:hover {
+            background: #ff3742;
+            transform: scale(1.1);
+        }
+        
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .campaigns-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .campaigns-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        .campaigns-list::-webkit-scrollbar-thumb {
+            background: #00d4ff;
+            border-radius: 4px;
+        }
+        
+        .campaigns-list::-webkit-scrollbar-thumb:hover {
+            background: #0099cc;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .campaign-item {
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .notification.success {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .notification.error {
+            background: #f44336;
+            color: white;
+        }
+        
+        .notification.info {
+            background: #2196f3;
+            color: white;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar será carregada dinamicamente pelo sidebar-loader.js -->
+
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+        <div class="container">
+            <div class="header">
+                <h1><i class="fas fa-bullhorn"></i> Campanhas</h1>
+                <p>Gerencie suas campanhas de marketing e listas de números</p>
+            </div>
+
+            <div class="main-content-grid">
+                <!-- Lista de Campanhas -->
+                <div class="campaigns-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-list"></i> Campanhas Salvas</h3>
+                        <div class="stats">
+                            <span class="stat-item">
+                                <i class="fas fa-bullhorn"></i>
+                                <span id="totalCampaigns">0</span> campanhas
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="campaigns-list" id="campaignsList">
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>Nenhuma campanha criada ainda</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Adicionar Nova Campanha -->
+                <div class="add-campaign-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-plus"></i> Nova Campanha</h3>
+                    </div>
+                    
+                    <form id="campaignForm">
+                        <div class="form-group">
+                            <label for="campaignName">Nome da Campanha</label>
+                            <input type="text" id="campaignName" placeholder="Ex: Black Friday 2024" required>
+                        </div>
+                        
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <div class="upload-content">
+                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                <h4>Arraste o arquivo TXT aqui</h4>
+                                <p>ou clique para selecionar</p>
+                                <input type="file" id="fileInput" accept=".txt" hidden>
+                                <button type="button" class="upload-btn" id="uploadBtn">
+                                    <i class="fas fa-folder-open"></i> Selecionar Arquivo
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="file-info" id="fileInfo" style="display: none;">
+                            <div class="file-details">
+                                <i class="fas fa-file"></i>
+                                <div class="file-text">
+                                    <span class="file-name" id="fileName"></span>
+                                    <span class="file-size" id="fileSize"></span>
+                                </div>
+                                <button type="button" class="remove-file" onclick="removeFile()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn" id="submitBtn">
+                            <i class="fas fa-save"></i> Salvar Campanha
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Processamento -->
+    <div class="modal" id="processingModal">
+        <div class="modal-content">
+            <div class="spinner"></div>
+            <p>Processando campanha...</p>
+        </div>
+    </div>
+
+    <script src="js/campanhas.js"></script>
+</body>
+</html>

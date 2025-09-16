@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste de Upload</title>
+</head>
+<body>
+    <h1>Teste de Upload de Template</h1>
+    <form id="testForm">
+        <div>
+            <label>Nome:</label>
+            <input type="text" name="name" value="teste upload" required>
+        </div>
+        <div>
+            <label>Mensagem:</label>
+            <textarea name="message" required>Teste de upload de imagem</textarea>
+        </div>
+        <div>
+            <label>Imagem:</label>
+            <input type="file" name="mediaFile" accept="image/*">
+        </div>
+        <div>
+            <label>Tipo de Mídia:</label>
+            <select name="mediaType">
+                <option value="image">Imagem</option>
+                <option value="none">Sem mídia</option>
+            </select>
+        </div>
+        <button type="submit">Enviar</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('testForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('name', document.querySelector('input[name="name"]').value);
+            formData.append('message', document.querySelector('textarea[name="message"]').value);
+            formData.append('mediaType', document.querySelector('select[name="mediaType"]').value);
+            
+            const fileInput = document.querySelector('input[name="mediaFile"]');
+            if (fileInput.files[0]) {
+                formData.append('mediaFile', fileInput.files[0]);
+            }
+
+            try {
+                const response = await fetch('/api/templates', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                document.getElementById('result').innerHTML = 
+                    '<pre>' + JSON.stringify(result, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('result').innerHTML = 
+                    '<p style="color: red;">Erro: ' + error.message + '</p>';
+            }
+        });
+    </script>
+</body>
+</html>
+

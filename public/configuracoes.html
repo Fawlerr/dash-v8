@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações - Dashboard WhatsApp</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="stylesheet" href="/css/sidebar-styles.css">
+    <script src="/js/sidebar-loader.js"></script>
+    <!-- Verificação de autenticação -->
+    <script src="/js/auth-check.js"></script>
+    <!-- Funcionalidades da página de configurações -->
+    <script src="/js/configuracoes.js"></script>
+    <!-- Efeitos tecnológicos -->
+    <link rel="stylesheet" href="/css/tech-effects.css">
+    <script src="/js/tech-effects.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+            padding: 20px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .page-header h1 {
+            color: #ffffff;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+            animation: tech-glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes tech-glow {
+            from {
+                text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+            }
+            to {
+                text-shadow: 0 0 30px rgba(139, 92, 246, 0.8), 0 0 40px rgba(6, 182, 212, 0.3);
+            }
+        }
+
+        .page-header p {
+            color: #b8b8b8;
+            font-size: 1.1rem;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .config-card {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .config-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4, #8b5cf6);
+            background-size: 200% 100%;
+            animation: gradient-shift 3s ease-in-out infinite;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .section-title {
+            color: #ffffff;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #8b5cf6;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(15, 15, 35, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #6b7280;
+        }
+
+        .form-group small {
+            color: #b8b8b8;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #0891b2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff4757, #ff3742);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #ff3742, #ff2f3a);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            color: #000;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #00cc6a, #00aa55);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.4);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-online {
+            background-color: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        .status-offline {
+            background-color: #ff4757;
+            box-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            color: #000;
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ff4757, #ff3742);
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 60px 20px 20px;
+            }
+
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar será carregada dinamicamente -->
+    
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Header da Página -->
+            <div class="page-header">
+                <h1><i class="fas fa-cog"></i> Configurações do Sistema</h1>
+                <p>Gerencie as configurações gerais do dashboard WhatsApp</p>
+            </div>
+
+            <!-- Grid de Configurações -->
+            <div class="config-grid">
+                <!-- Configurações da API -->
+                <div class="config-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-plug"></i>
+                        Configurações da API
+                    </h2>
+                    
+                    <form id="apiConfigForm">
+                        <div class="form-group">
+                            <label for="apiUrl">URL da API</label>
+                            <input type="url" id="apiUrl" name="apiUrl" value="https://api.z-api.io" required>
+                            <small>URL base da API do Z-API</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="apiToken">Token da API</label>
+                            <input type="password" id="apiToken" name="apiToken" placeholder="Digite o token da API" required>
+                            <small>Token de autenticação da API</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="apiTimeout">Timeout (segundos)</label>
+                            <input type="number" id="apiTimeout" name="apiTimeout" value="30" min="5" max="300">
+                            <small>Tempo limite para requisições da API</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="retryAttempts">Tentativas de Reenvio</label>
+                            <input type="number" id="retryAttempts" name="retryAttempts" value="3" min="1" max="10">
+                            <small>Número de tentativas em caso de falha</small>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Salvar Configurações
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Configurações de Notificações -->
+                <div class="config-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-bell"></i>
+                        Notificações
+                    </h2>
+                    
+                    <form id="notificationConfigForm">
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" id="emailNotifications" checked>
+                                <span>Notificações por Email</span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notificationEmail">Email para Notificações</label>
+                            <input type="email" id="notificationEmail" name="notificationEmail" value="admin@dashboard.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" id="browserNotifications" checked>
+                                <span>Notificações do Navegador</span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notificationFrequency">Frequência de Verificação</label>
+                            <select id="notificationFrequency" name="notificationFrequency">
+                                <option value="1">A cada minuto</option>
+                                <option value="5" selected>A cada 5 minutos</option>
+                                <option value="15">A cada 15 minutos</option>
+                                <option value="30">A cada 30 minutos</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Salvar Configurações
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Configurações de Backup -->
+                <div class="config-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-database"></i>
+                        Backup e Restauração
+                    </h2>
+                    
+                    <div class="form-group">
+                        <label>Status do Backup</label>
+                        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                            <span class="status-indicator status-online"></span>
+                            <span>Último backup: <span id="lastBackup">Hoje às 14:30</span></span>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <button class="btn btn-success" onclick="createBackup()">
+                            <i class="fas fa-download"></i> Criar Backup
+                        </button>
+                        <button class="btn btn-secondary" onclick="restoreBackup()">
+                            <i class="fas fa-upload"></i> Restaurar
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="autoBackup">Backup Automático</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoBackup" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <span>Ativar backup automático diário</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configurações de Segurança -->
+                <div class="config-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-shield-alt"></i>
+                        Segurança
+                    </h2>
+                    
+                    <form id="securityConfigForm">
+                        <div class="form-group">
+                            <label for="sessionTimeout">Timeout da Sessão (minutos)</label>
+                            <input type="number" id="sessionTimeout" name="sessionTimeout" value="60" min="15" max="480">
+                            <small>Tempo de inatividade antes de deslogar automaticamente</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="maxLoginAttempts">Tentativas de Login</label>
+                            <input type="number" id="maxLoginAttempts" name="maxLoginAttempts" value="5" min="3" max="10">
+                            <small>Número máximo de tentativas de login antes de bloquear</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" id="twoFactorAuth">
+                                <span>Autenticação de Dois Fatores</span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" id="ipWhitelist">
+                                <span>Lista Branca de IPs</span>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Salvar Configurações
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Configurações de Performance -->
+                <div class="config-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Performance
+                    </h2>
+                    
+                    <form id="performanceConfigForm">
+                        <div class="form-group">
+                            <label for="refreshInterval">Intervalo de Atualização (segundos)</label>
+                            <input type="number" id="refreshInterval" name="refreshInterval" value="30" min="10" max="300">
+                            <small>Frequência de atualização dos dados</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="maxInstances">Máximo de Instâncias</label>
+                            <input type="number" id="maxInstances" name="maxInstances" value="50" min="1" max="1000">
+                            <small>Número máximo de instâncias simultâneas</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cacheTimeout">Timeout do Cache (minutos)</label>
+                            <input type="number" id="cacheTimeout" name="cacheTimeout" value="5" min="1" max="60">
+                            <small>Tempo de vida dos dados em cache</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" id="enableLogging" checked>
+                                <span>Habilitar Logs Detalhados</span>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Salvar Configurações
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Configurações de Interface -->
+                <div class="config-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-palette"></i>
+                        Interface
+                    </h2>
+                    
+                    <form id="interfaceConfigForm">
+                        <div class="form-group">
+                            <label for="defaultTheme">Tema Padrão</label>
+                            <select id="defaultTheme" name="defaultTheme">
+                                <option value="dark" selected>Escuro</option>
+                                <option value="light">Claro</option>
+                                <option value="auto">Automático</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="language">Idioma</label>
+                            <select id="language" name="language">
+                                <option value="pt-BR" selected>Português (Brasil)</option>
+                                <option value="en-US">English (US)</option>
+                                <option value="es-ES">Español</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="timezone">Fuso Horário</label>
+                            <select id="timezone" name="timezone">
+                                <option value="America/Sao_Paulo" selected>Brasília (GMT-3)</option>
+                                <option value="America/New_York">Nova York (GMT-5)</option>
+                                <option value="Europe/London">Londres (GMT+0)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dateFormat">Formato de Data</label>
+                            <select id="dateFormat" name="dateFormat">
+                                <option value="DD/MM/YYYY" selected>DD/MM/YYYY</option>
+                                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Salvar Configurações
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Ações do Sistema -->
+            <div class="config-card">
+                <h2 class="section-title">
+                    <i class="fas fa-tools"></i>
+                    Ações do Sistema
+                </h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <button class="btn btn-success" onclick="restartSystem()">
+                        <i class="fas fa-redo"></i> Reiniciar Sistema
+                    </button>
+                    
+                    <button class="btn btn-secondary" onclick="clearCache()">
+                        <i class="fas fa-trash"></i> Limpar Cache
+                    </button>
+                    
+                    <button class="btn btn-secondary" onclick="exportLogs()">
+                        <i class="fas fa-download"></i> Exportar Logs
+                    </button>
+                    
+                    <button class="btn btn-danger" onclick="resetSettings()">
+                        <i class="fas fa-undo"></i> Resetar Configurações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inicializar ícones Lucide
+        lucide.createIcons();
+
+        // Mostrar notificação
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+
+        // Criar backup
+        function createBackup() {
+            showNotification('Criando backup...', 'info');
+            // Simular criação de backup
+            setTimeout(() => {
+                showNotification('Backup criado com sucesso!', 'success');
+                document.getElementById('lastBackup').textContent = 'Agora às ' + new Date().toLocaleTimeString('pt-BR');
+            }, 2000);
+        }
+
+        // Restaurar backup
+        function restoreBackup() {
+            if (confirm('Tem certeza que deseja restaurar o backup? Isso substituirá todas as configurações atuais.')) {
+                showNotification('Restaurando backup...', 'info');
+                setTimeout(() => {
+                    showNotification('Backup restaurado com sucesso!', 'success');
+                }, 2000);
+            }
+        }
+
+        // Reiniciar sistema
+        function restartSystem() {
+            if (confirm('Tem certeza que deseja reiniciar o sistema? Isso pode causar interrupção temporária.')) {
+                showNotification('Reiniciando sistema...', 'info');
+                setTimeout(() => {
+                    showNotification('Sistema reiniciado com sucesso!', 'success');
+                }, 3000);
+            }
+        }
+
+        // Limpar cache
+        function clearCache() {
+            showNotification('Limpando cache...', 'info');
+            setTimeout(() => {
+                showNotification('Cache limpo com sucesso!', 'success');
+            }, 1500);
+        }
+
+        // Exportar logs
+        function exportLogs() {
+            showNotification('Exportando logs...', 'info');
+            setTimeout(() => {
+                showNotification('Logs exportados com sucesso!', 'success');
+            }, 2000);
+        }
+
+        // Resetar configurações
+        function resetSettings() {
+            if (confirm('Tem certeza que deseja resetar todas as configurações para os valores padrão? Esta ação não pode ser desfeita.')) {
+                showNotification('Resetando configurações...', 'info');
+                setTimeout(() => {
+                    showNotification('Configurações resetadas com sucesso!', 'success');
+                    location.reload();
+                }, 2000);
+            }
+        }
+
+        // Event listeners para formulários
+        document.getElementById('apiConfigForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showNotification('Configurações da API salvas!', 'success');
+        });
+
+        document.getElementById('notificationConfigForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showNotification('Configurações de notificação salvas!', 'success');
+        });
+
+        document.getElementById('securityConfigForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showNotification('Configurações de segurança salvas!', 'success');
+        });
+
+        document.getElementById('performanceConfigForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showNotification('Configurações de performance salvas!', 'success');
+        });
+
+        document.getElementById('interfaceConfigForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showNotification('Configurações de interface salvas!', 'success');
+        });
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Carregar configurações salvas (em produção, viriam do backend)
+            console.log('Página de configurações carregada');
+        });
+    </script>
+</body>
+</html>

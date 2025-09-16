@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Códigos WhatsApp</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="stylesheet" href="/css/sidebar-styles.css">
+    <script src="/js/sidebar-loader.js"></script>
+    <!-- Verificação de autenticação -->
+    <script src="/js/auth-check.js"></script>
+    <!-- Efeitos tecnológicos -->
+    <link rel="stylesheet" href="/css/tech-effects.css">
+    <script src="/js/tech-effects.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #111827;
+            border-right: 1px solid #374151;
+            z-index: 1000;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar-hidden {
+            transform: translateX(-100%);
+        }
+
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+            padding: 20px;
+            transition: margin-left 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #d1d5db;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            margin: 4px 12px;
+        }
+
+        .sidebar-item:hover {
+            background: #374151;
+            color: #ffffff;
+        }
+
+        .sidebar-item i {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            color: #9ca3af;
+        }
+
+        .sidebar-item:hover i {
+            color: #ffffff;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #374151;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: #374151;
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            color: #ffffff;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #b8b8b8;
+            font-size: 1.1rem;
+        }
+
+        .nav-links {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .nav-links a {
+            display: inline-block;
+            margin: 0 10px;
+            padding: 10px 20px;
+            background: rgba(26, 26, 46, 0.9);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-links a:hover {
+            background: rgba(26, 26, 46, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-container {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent);
+            animation: glass-shine 3s ease-in-out infinite;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #ffffff;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(15, 15, 35, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .form-group input::placeholder {
+            color: #b8b8b8;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 
+                0 4px 15px rgba(139, 92, 246, 0.3),
+                0 0 10px rgba(139, 92, 246, 0.2);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #a855f7, #0891b2);
+            transform: translateY(-3px);
+            box-shadow: 
+                0 10px 25px rgba(139, 92, 246, 0.4),
+                0 0 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .result-container {
+            background: rgba(15, 15, 35, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        .result-container.success {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .result-container.error {
+            border-color: #ff4757;
+            background: rgba(255, 71, 87, 0.05);
+        }
+
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-title.success {
+            color: #00ff88;
+        }
+
+        .result-title.error {
+            color: #ff4757;
+        }
+
+        .code-display {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 2px;
+            margin: 15px 0;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        .qr-section {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .qr-code-container {
+            flex: 1;
+            text-align: center;
+        }
+
+        .qr-code {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px 0;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .qr-code img {
+            max-width: 200px;
+            height: auto;
+        }
+
+        .code-section {
+            flex: 1;
+            text-align: center;
+        }
+
+        .code-label {
+            font-size: 1.1rem;
+            color: #b8b8b8;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .code-value {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.8rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            margin: 10px 0;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .code-value:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .instructions {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .instructions h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .instructions ol {
+            color: #b8b8b8;
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .qr-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .qr-code img {
+                max-width: 150px;
+            }
+
+            .code-value {
+                font-size: 1.4rem;
+                letter-spacing: 2px;
+            }
+        }
+
+        .instance-info {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 0.9rem;
+            color: #b8b8b8;
+            margin-top: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #b8b8b8;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            z-index: 1001;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
+            font-weight: 500;
+        }
+
+        .notification.success {
+            background: #00ff88;
+            color: #000;
+        }
+
+        .notification.error {
+            background: #ff4757;
+            color: #fff;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 25px;
+            }
+
+            .code-display {
+                font-size: 1.2rem;
+                letter-spacing: 1px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar será carregada dinamicamente pelo sidebar-loader.js -->
+
+    <!-- Overlay para mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Botão de menu hambúrguer para mobile -->
+    <button id="menuToggle" class="menu-toggle">
+        <i data-lucide="menu"></i>
+    </button>
+
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+        <div class="container">
+            <div class="header">
+                <h1><i class="fas fa-mobile-alt"></i> Gerador de Códigos</h1>
+                <p>Gere códigos de verificação para WhatsApp</p>
+            </div>
+
+        <div class="form-container">
+            <form id="codeForm">
+                <div class="form-group">
+                    <label for="phoneNumber">
+                        <i class="fas fa-phone"></i> Número de Telefone
+                    </label>
+                    <input 
+                        type="tel" 
+                        id="phoneNumber" 
+                        name="phoneNumber" 
+                        placeholder="Ex: 5511999999999 ou 11999999999"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="btn" id="generateBtn">
+                    <i class="fas fa-key"></i> Gerar Código
+                </button>
+            </form>
+
+            <div class="result-container" id="resultContainer">
+                <div class="result-title" id="resultTitle">
+                    <i class="fas fa-info-circle"></i>
+                    <span id="resultText">Resultado</span>
+                </div>
+                
+                <div class="qr-section" id="qrSection" style="display: none;">
+                    <div class="qr-code-container">
+                        <div class="qr-code" id="qrCodeContainer">
+                            <!-- QR Code será exibido aqui -->
+                        </div>
+                        <p style="color: #b8b8b8; font-size: 0.9rem; margin-top: 10px;">
+                            Escaneie o QR Code com seu WhatsApp
+                        </p>
+                    </div>
+                    
+                    <div class="code-section">
+                        <div class="code-label">Código de Verificação</div>
+                        <div class="code-value" id="codeValue" onclick="copyToClipboard(this.textContent)">
+                            <!-- Código será exibido aqui -->
+                        </div>
+                        <p style="color: #b8b8b8; font-size: 0.9rem; margin-top: 10px;">
+                            Clique no código para copiar
+                        </p>
+                    </div>
+                </div>
+
+                <div class="code-display" id="codeDisplay" style="display: none;">
+                    <!-- Código será exibido aqui (versão antiga) -->
+                </div>
+                
+                <div class="instance-info" id="instanceInfo" style="display: none;">
+                    <!-- Informações da instância serão exibidas aqui -->
+                </div>
+
+                <div class="instructions" id="instructions" style="display: none;">
+                    <h3><i class="fas fa-info-circle"></i> Como conectar:</h3>
+                    <ol>
+                        <li>Abra o WhatsApp no seu celular</li>
+                        <li>Vá em <strong>Configurações > Aparelhos conectados</strong></li>
+                        <li>Toque em <strong>"Conectar um aparelho"</strong></li>
+                        <li>Escaneie o QR Code ou digite o código de verificação</li>
+                        <li>Aguarde a conexão ser estabelecida</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="loading" id="loadingIndicator" style="display: none;">
+                <i class="fas fa-spinner"></i>
+                <p>Gerando código...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('codeForm');
+        const generateBtn = document.getElementById('generateBtn');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultText = document.getElementById('resultText');
+        const codeDisplay = document.getElementById('codeDisplay');
+        const instanceInfo = document.getElementById('instanceInfo');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const qrSection = document.getElementById('qrSection');
+        const qrCodeContainer = document.getElementById('qrCodeContainer');
+        const codeValue = document.getElementById('codeValue');
+        const instructions = document.getElementById('instructions');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            
+            if (!phoneNumber) {
+                showNotification('Por favor, insira um número de telefone', 'error');
+                return;
+            }
+
+            // Clean phone number (remove non-digits)
+            const cleanPhone = phoneNumber.replace(/[^0-9]/g, '');
+            
+            if (cleanPhone.length < 10) {
+                showNotification('Número de telefone inválido', 'error');
+                return;
+            }
+
+            // Show loading
+            showLoading();
+            hideResult();
+
+            try {
+                const response = await fetch('/api/generate-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ phone: cleanPhone })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccess(data.code, data.instance_id);
+                } else {
+                    showError(data.error || 'Erro ao gerar código');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Erro de conexão. Tente novamente.');
+            } finally {
+                hideLoading();
+            }
+        });
+
+        function showLoading() {
+            loadingIndicator.style.display = 'block';
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando...';
+        }
+
+        function hideLoading() {
+            loadingIndicator.style.display = 'none';
+            generateBtn.disabled = false;
+            generateBtn.innerHTML = '<i class="fas fa-key"></i> Gerar Código';
+        }
+
+        function showSuccess(code, instanceId) {
+            console.log('showSuccess called with:', { code, instanceId });
+            
+            resultContainer.className = 'result-container show success';
+            resultTitle.className = 'result-title success';
+            resultTitle.innerHTML = '<i class="fas fa-check-circle"></i> Código e QR Code Gerados com Sucesso!';
+            
+            // Show QR section
+            qrSection.style.display = 'flex';
+            
+            // Generate QR Code
+            console.log('Generating QR code for:', code);
+            generateQRCode(code);
+            
+            // Show code
+            codeValue.textContent = code;
+            console.log('Code value set to:', codeValue.textContent);
+            
+            // Show instance info
+            instanceInfo.innerHTML = `<strong>Instância:</strong> ${instanceId.substring(0, 8)}...`;
+            instanceInfo.style.display = 'block';
+            
+            // Show instructions
+            instructions.style.display = 'block';
+            
+            // Hide old code display
+            codeDisplay.style.display = 'none';
+            
+            // Copy to clipboard
+            copyToClipboard(code);
+        }
+
+        function showError(message) {
+            resultContainer.className = 'result-container show error';
+            resultTitle.className = 'result-title error';
+            resultTitle.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Erro';
+            resultText.textContent = message;
+            
+            // Hide all sections
+            qrSection.style.display = 'none';
+            codeDisplay.style.display = 'none';
+            instanceInfo.style.display = 'none';
+            instructions.style.display = 'none';
+        }
+
+        function hideResult() {
+            resultContainer.className = 'result-container';
+            resultContainer.style.display = 'none';
+            qrSection.style.display = 'none';
+            codeDisplay.style.display = 'none';
+            instanceInfo.style.display = 'none';
+            instructions.style.display = 'none';
+        }
+
+        function generateQRCode(code) {
+            console.log('generateQRCode called with:', code);
+            console.log('QRCode library available:', typeof QRCode);
+            
+            // Clear previous QR code
+            qrCodeContainer.innerHTML = '';
+            
+            // Check if QRCode library is available
+            if (typeof QRCode === 'undefined') {
+                console.error('QRCode library not loaded');
+                qrCodeContainer.innerHTML = '<p style="color: #ff4757;">Biblioteca QRCode não carregada</p>';
+                return;
+            }
+            
+            // Create canvas element
+            const canvas = document.createElement('canvas');
+            qrCodeContainer.appendChild(canvas);
+            
+            // Generate QR code using QRCode.js
+            try {
+                QRCode.toCanvas(canvas, code, {
+                    width: 200,
+                    height: 200,
+                    color: {
+                        dark: '#000000',
+                        light: '#FFFFFF'
+                    },
+                    margin: 2,
+                    errorCorrectionLevel: 'M'
+                }, function (error) {
+                    if (error) {
+                        console.error('Erro ao gerar QR code:', error);
+                        qrCodeContainer.innerHTML = '<p style="color: #ff4757;">Erro ao gerar QR code: ' + error.message + '</p>';
+                    } else {
+                        console.log('QR code generated successfully');
+                    }
+                });
+            } catch (error) {
+                console.error('Erro na geração do QR code:', error);
+                qrCodeContainer.innerHTML = '<p style="color: #ff4757;">Erro na geração do QR code: ' + error.message + '</p>';
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Código copiado para a área de transferência!', 'success');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showNotification('Código copiado para a área de transferência!', 'success');
+            });
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+
+        // Format phone number as user types
+        document.getElementById('phoneNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            // Add country code if not present and number is 11 digits (Brazil)
+            if (value.length === 11 && !value.startsWith('55')) {
+                value = '55' + value;
+            }
+            
+            e.target.value = value;
+        });
+
+        // Sidebar functionality será gerenciada pelo sidebar-loader.js
+
+        // Initialize sidebar when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+</html>
+

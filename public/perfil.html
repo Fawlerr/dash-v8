@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - Dashboard WhatsApp</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="stylesheet" href="/css/sidebar-styles.css">
+    <script src="/js/sidebar-loader.js"></script>
+    <!-- Verificação de autenticação -->
+    <script src="/js/auth-check.js"></script>
+    <!-- Funcionalidades da página de perfil -->
+    <script src="/js/perfil.js"></script>
+    <!-- Efeitos tecnológicos -->
+    <link rel="stylesheet" href="/css/tech-effects.css">
+    <script src="/js/tech-effects.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+            padding: 20px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .page-header h1 {
+            color: #ffffff;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+            animation: tech-glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes tech-glow {
+            from {
+                text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+            }
+            to {
+                text-shadow: 0 0 30px rgba(139, 92, 246, 0.8), 0 0 40px rgba(6, 182, 212, 0.3);
+            }
+        }
+
+        .page-header p {
+            color: #b8b8b8;
+            font-size: 1.1rem;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .profile-card {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4, #8b5cf6);
+            background-size: 200% 100%;
+            animation: gradient-shift 3s ease-in-out infinite;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 3rem;
+            color: white;
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .profile-info h3 {
+            color: #ffffff;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .profile-info p {
+            color: #b8b8b8;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(15, 15, 35, 0.8);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #8b5cf6;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #b8b8b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(15, 15, 35, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #6b7280;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #7c3aed, #0891b2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff4757, #ff3742);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #ff3742, #ff2f3a);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4);
+        }
+
+        .section-title {
+            color: #ffffff;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #8b5cf6;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            color: #000;
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ff4757, #ff3742);
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 60px 20px 20px;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar será carregada dinamicamente -->
+    
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Header da Página -->
+            <div class="page-header">
+                <h1><i class="fas fa-user"></i> Perfil do Usuário</h1>
+                <p>Gerencie suas informações pessoais e configurações de conta</p>
+            </div>
+
+            <!-- Grid Principal -->
+            <div class="profile-grid">
+                <!-- Card de Informações Pessoais -->
+                <div class="profile-card">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="profile-info">
+                        <h3 id="userName">Admin</h3>
+                        <p id="userRole">Administrador</p>
+                        <p id="userEmail">admin@dashboard.com</p>
+                    </div>
+                    
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="loginCount">0</div>
+                            <div class="stat-label">Logins</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="lastLogin">--</div>
+                            <div class="stat-label">Último Login</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card de Edição de Perfil -->
+                <div class="profile-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-edit"></i>
+                        Editar Perfil
+                    </h2>
+                    
+                    <form id="profileForm">
+                        <div class="form-group">
+                            <label for="editName">Nome Completo</label>
+                            <input type="text" id="editName" name="name" value="Admin" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editEmail">Email</label>
+                            <input type="email" id="editEmail" name="email" value="admin@dashboard.com" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editRole">Função</label>
+                            <select id="editRole" name="role" disabled>
+                                <option value="admin">Administrador</option>
+                                <option value="user">Usuário</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editBio">Biografia</label>
+                            <textarea id="editBio" name="bio" rows="3" placeholder="Conte um pouco sobre você..."></textarea>
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px; margin-top: 25px;">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Salvar Alterações
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                <i class="fas fa-undo"></i> Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Seção de Segurança -->
+            <div class="profile-card">
+                <h2 class="section-title">
+                    <i class="fas fa-shield-alt"></i>
+                    Segurança da Conta
+                </h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <div>
+                        <h3 style="color: #ffffff; margin-bottom: 15px;">Alterar Senha</h3>
+                        <form id="passwordForm">
+                            <div class="form-group">
+                                <label for="currentPassword">Senha Atual</label>
+                                <input type="password" id="currentPassword" name="currentPassword" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="newPassword">Nova Senha</label>
+                                <input type="password" id="newPassword" name="newPassword" required minlength="6">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="confirmPassword">Confirmar Nova Senha</label>
+                                <input type="password" id="confirmPassword" name="confirmPassword" required minlength="6">
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-key"></i> Alterar Senha
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div>
+                        <h3 style="color: #ffffff; margin-bottom: 15px;">Sessões Ativas</h3>
+                        <div style="background: rgba(15, 15, 35, 0.8); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="color: #ffffff; font-weight: 600;">Sessão Atual</div>
+                                    <div style="color: #b8b8b8; font-size: 0.9rem;" id="currentSession">Navegador Web - Agora</div>
+                                </div>
+                                <div style="color: #00ff88; font-size: 0.8rem; font-weight: 600;">ATIVA</div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-danger" onclick="logoutAllSessions()">
+                            <i class="fas fa-sign-out-alt"></i> Encerrar Todas as Sessões
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção de Preferências -->
+            <div class="profile-card">
+                <h2 class="section-title">
+                    <i class="fas fa-cog"></i>
+                    Preferências
+                </h2>
+                
+                <form id="preferencesForm">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                        <div>
+                            <div class="form-group">
+                                <label for="theme">Tema</label>
+                                <select id="theme" name="theme">
+                                    <option value="dark">Escuro (Padrão)</option>
+                                    <option value="light">Claro</option>
+                                    <option value="auto">Automático</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="language">Idioma</label>
+                                <select id="language" name="language">
+                                    <option value="pt-BR">Português (Brasil)</option>
+                                    <option value="en-US">English (US)</option>
+                                    <option value="es-ES">Español</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="form-group">
+                                <label for="notifications">Notificações</label>
+                                <select id="notifications" name="notifications">
+                                    <option value="all">Todas</option>
+                                    <option value="important">Apenas Importantes</option>
+                                    <option value="none">Nenhuma</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="timezone">Fuso Horário</label>
+                                <select id="timezone" name="timezone">
+                                    <option value="America/Sao_Paulo">Brasília (GMT-3)</option>
+                                    <option value="America/New_York">Nova York (GMT-5)</option>
+                                    <option value="Europe/London">Londres (GMT+0)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 25px;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Salvar Preferências
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inicializar ícones Lucide
+        lucide.createIcons();
+
+        // Dados do usuário (em produção, viriam do backend)
+        let userData = {
+            name: 'Admin',
+            email: 'admin@dashboard.com',
+            role: 'admin',
+            bio: '',
+            loginCount: 0,
+            lastLogin: new Date().toLocaleString('pt-BR'),
+            preferences: {
+                theme: 'dark',
+                language: 'pt-BR',
+                notifications: 'all',
+                timezone: 'America/Sao_Paulo'
+            }
+        };
+
+        // Carregar dados do usuário
+        function loadUserData() {
+            document.getElementById('userName').textContent = userData.name;
+            document.getElementById('userRole').textContent = userData.role === 'admin' ? 'Administrador' : 'Usuário';
+            document.getElementById('userEmail').textContent = userData.email;
+            document.getElementById('loginCount').textContent = userData.loginCount;
+            document.getElementById('lastLogin').textContent = userData.lastLogin;
+            
+            // Preencher formulários
+            document.getElementById('editName').value = userData.name;
+            document.getElementById('editEmail').value = userData.email;
+            document.getElementById('editBio').value = userData.bio || '';
+            
+            // Preferências
+            document.getElementById('theme').value = userData.preferences.theme;
+            document.getElementById('language').value = userData.preferences.language;
+            document.getElementById('notifications').value = userData.preferences.notifications;
+            document.getElementById('timezone').value = userData.preferences.timezone;
+        }
+
+        // Mostrar notificação
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+
+        // Resetar formulário
+        function resetForm() {
+            loadUserData();
+            showNotification('Formulário resetado', 'info');
+        }
+
+        // Encerrar todas as sessões
+        function logoutAllSessions() {
+            if (confirm('Tem certeza que deseja encerrar todas as sessões? Você será deslogado de todos os dispositivos.')) {
+                // Em produção, chamaria a API
+                showNotification('Todas as sessões foram encerradas', 'success');
+                setTimeout(() => {
+                    window.authCheck.logout();
+                }, 1500);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('profileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                bio: formData.get('bio')
+            };
+
+            // Simular salvamento (em produção, chamaria a API)
+            userData.name = data.name;
+            userData.email = data.email;
+            userData.bio = data.bio;
+            
+            loadUserData();
+            showNotification('Perfil atualizado com sucesso!', 'success');
+        });
+
+        document.getElementById('passwordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const currentPassword = formData.get('currentPassword');
+            const newPassword = formData.get('newPassword');
+            const confirmPassword = formData.get('confirmPassword');
+
+            if (newPassword !== confirmPassword) {
+                showNotification('As senhas não coincidem', 'error');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showNotification('A nova senha deve ter pelo menos 6 caracteres', 'error');
+                return;
+            }
+
+            // Simular alteração de senha (em produção, chamaria a API)
+            showNotification('Senha alterada com sucesso!', 'success');
+            this.reset();
+        });
+
+        document.getElementById('preferencesForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            userData.preferences = {
+                theme: formData.get('theme'),
+                language: formData.get('language'),
+                notifications: formData.get('notifications'),
+                timezone: formData.get('timezone')
+            };
+
+            // Simular salvamento (em produção, chamaria a API)
+            showNotification('Preferências salvas com sucesso!', 'success');
+        });
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+        });
+    </script>
+</body>
+</html>

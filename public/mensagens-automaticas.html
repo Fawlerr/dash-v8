@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensagens Automáticas - Dashboard WhatsApp</title>
+    
+    <!-- CSS e JS necessários -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Sidebar dinâmica -->
+    <link rel="stylesheet" href="/css/sidebar-styles.css">
+    <script src="/js/sidebar-loader.js"></script>
+    <!-- Verificação de autenticação -->
+    <script src="/js/auth-check.js"></script>
+    <!-- Efeitos tecnológicos -->
+    <link rel="stylesheet" href="/css/tech-effects.css">
+    <script src="/js/tech-effects.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%); 
+            min-height: 100vh; 
+            color: #ffffff; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        .main-content { margin-left: 250px; min-height: 100vh; padding: 20px; transition: margin-left 0.3s ease-in-out; }
+        
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+        
+        .main-panel {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .preview-panel {
+            width: 350px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .header { 
+            background: rgba(26, 26, 46, 0.95); 
+            backdrop-filter: blur(10px); 
+            border-radius: 20px; 
+            padding: 30px; 
+            margin-bottom: 30px; 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); 
+            text-align: center; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+        
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .flow-blocks {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .flow-block {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 0 15px rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .flow-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .flow-block:hover::before {
+            left: 100%;
+        }
+        
+        .flow-block:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.4),
+                0 0 25px rgba(139, 92, 246, 0.4),
+                0 0 50px rgba(139, 92, 246, 0.1);
+            border-color: rgba(139, 92, 246, 0.6);
+        }
+        
+        .flow-block::after {
+            content: '→';
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: #00d4ff;
+            z-index: 10;
+        }
+        
+        .flow-block:last-child::after {
+            display: none;
+        }
+        
+        .block-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .block-icon {
+            font-size: 1.5rem;
+        }
+        
+        .block-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #ffffff;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: #374151;
+            border: 1px solid #4b5563;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-group input::placeholder, .form-group textarea::placeholder {
+            color: #9ca3af;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .phone-list {
+            background: rgba(15, 15, 35, 0.8);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .phone-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .phone-item:last-child {
+            border-bottom: none;
+        }
+        
+        .phone-number {
+            color: #ffffff;
+            font-family: monospace;
+        }
+        
+        .remove-phone {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .remove-phone:hover {
+            background: #dc2626;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-online {
+            background: #00ff88;
+        }
+        
+        .status-offline {
+            background: #ff4757;
+        }
+        
+        .start-flow-btn {
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            color: #fff;
+            border: none;
+            border-radius: 15px;
+            padding: 20px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 8px 32px rgba(139, 92, 246, 0.4),
+                0 0 20px rgba(139, 92, 246, 0.3);
+            margin: 0 auto;
+            display: block;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .start-flow-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .start-flow-btn:hover::before {
+            left: 100%;
+        }
+
+        .start-flow-btn:hover {
+            background: linear-gradient(135deg, #a855f7, #0891b2);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 
+                0 15px 45px rgba(139, 92, 246, 0.6),
+                0 0 30px rgba(139, 92, 246, 0.5),
+                0 0 60px rgba(139, 92, 246, 0.2);
+        }
+        
+        .start-flow-btn:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .alert {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+        }
+        
+        .progress-bar {
+            background: rgba(15, 15, 35, 0.8);
+            border-radius: 10px;
+            height: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+        
+        /* WhatsApp Preview Styles */
+        .whatsapp-preview {
+            background: #111b21;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .whatsapp-header {
+            background: #2a3942;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .whatsapp-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .whatsapp-contact-info {
+            flex: 1;
+        }
+        
+        .whatsapp-contact-name {
+            color: #e9edef;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 0;
+        }
+        
+        .whatsapp-contact-status {
+            color: #8696a0;
+            font-size: 13px;
+            margin: 2px 0 0 0;
+        }
+        
+        .whatsapp-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #0b141a;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .whatsapp-message {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 18px;
+            position: relative;
+            word-wrap: break-word;
+        }
+        
+        .whatsapp-message.sent {
+            background: #005c4b;
+            color: #e9edef;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        
+        .whatsapp-message.received {
+            background: #202c33;
+            color: #e9edef;
+            align-self: flex-start;
+        }
+        
+        .whatsapp-message-time {
+            font-size: 11px;
+            color: #8696a0;
+            margin-top: 4px;
+            text-align: right;
+        }
+        
+        .whatsapp-message.received .whatsapp-message-time {
+            text-align: left;
+        }
+        
+        .whatsapp-template-preview {
+            background: #202c33;
+            border: 1px solid #3b4a54;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+        
+        .whatsapp-template-title {
+            color: #e9edef;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+        
+        .whatsapp-template-message {
+            color: #8696a0;
+            font-size: 13px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+        
+        .whatsapp-template-footer {
+            color: #8696a0;
+            font-size: 11px;
+            border-top: 1px solid #3b4a54;
+            padding-top: 6px;
+        }
+        
+        .whatsapp-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        
+        .whatsapp-button {
+            background: #2a3942;
+            border: 1px solid #3b4a54;
+            color: #e9edef;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .whatsapp-button:hover {
+            background: #3b4a54;
+        }
+        
+        .whatsapp-media-preview {
+            margin-bottom: 8px;
+        }
+        
+        .whatsapp-media-preview img,
+        .whatsapp-media-preview video {
+            max-width: 200px;
+            border-radius: 8px;
+            display: block;
+        }
+        
+        .whatsapp-media-preview audio {
+            width: 200px;
+            display: block;
+        }
+        
+        .whatsapp-preview-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #8696a0;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .whatsapp-preview-placeholder i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .whatsapp-preview-placeholder h3 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+        }
+        
+        .whatsapp-preview-placeholder p {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 1200px) {
+            .content-wrapper {
+                flex-direction: column;
+            }
+            
+            .preview-panel {
+                width: 100%;
+                position: static;
+            }
+            
+            .whatsapp-preview {
+                height: 400px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content { margin-left: 0; padding: 60px 20px 20px; }
+            .flow-blocks { flex-direction: column; }
+            .flow-block::after { display: none; }
+            .flow-block { min-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar será carregada dinamicamente pelo sidebar-loader.js -->
+    
+    <div class="main-content">
+        <div class="container">
+            <div class="header">
+                <h1><i class="fas fa-robot"></i> Mensagens Automáticas</h1>
+                <p>Configure e execute campanhas de mensagens automáticas</p>
+            </div>
+            
+            <div class="content-wrapper">
+                <div class="main-panel">
+                    <div id="mensagens-automaticas-root"></div>
+                </div>
+                
+                <div class="preview-panel">
+                    <div class="whatsapp-preview">
+                        <div class="whatsapp-header">
+                            <div class="whatsapp-avatar">WA</div>
+                            <div class="whatsapp-contact-info">
+                                <h3 class="whatsapp-contact-name">Preview WhatsApp</h3>
+                                <p class="whatsapp-contact-status">online</p>
+                            </div>
+                        </div>
+                        <div class="whatsapp-messages" id="whatsapp-messages">
+                            <div class="whatsapp-preview-placeholder">
+                                <i class="fab fa-whatsapp"></i>
+                                <h3>Preview da Mensagem</h3>
+                                <p>Selecione um template para ver como ficará no WhatsApp</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function MensagensAutomaticas() {
+            const [campanhas, setCampanhas] = useState([]);
+            const [templates, setTemplates] = useState([]);
+            const [instancias, setInstancias] = useState([]);
+            const [selectedCampanha, setSelectedCampanha] = useState('');
+            const [phoneNumbers, setPhoneNumbers] = useState([]);
+            const [newPhone, setNewPhone] = useState('');
+            const [selectedTemplate, setSelectedTemplate] = useState(null);
+            const [customMessage, setCustomMessage] = useState('');
+            const [selectedInstancia, setSelectedInstancia] = useState('');
+            const [isLoading, setIsLoading] = useState(false);
+            const [alert, setAlert] = useState(null);
+            const [progress, setProgress] = useState(0);
+            const [isRunning, setIsRunning] = useState(false);
+            const [accountToken, setAccountToken] = useState('');
+            const [isLoadingCampaigns, setIsLoadingCampaigns] = useState(true);
+
+            // Carregar dados iniciais
+            useEffect(() => {
+                loadData();
+            }, []);
+
+            // Atualizar preview do WhatsApp quando template ou mensagem personalizada mudar
+            useEffect(() => {
+                updateWhatsAppPreview();
+            }, [selectedTemplate, customMessage]);
+
+            // Atualizar preview após o componente ser montado
+            useEffect(() => {
+                const timer = setTimeout(() => {
+                    updateWhatsAppPreview();
+                }, 100);
+                return () => clearTimeout(timer);
+            }, []);
+
+            const loadData = async () => {
+                try {
+                    setIsLoadingCampaigns(true);
+                    
+                    // Carregar templates
+                    const templatesResponse = await fetch('/api/templates');
+                    const templatesData = await templatesResponse.json();
+                    setTemplates(templatesData.templates || []);
+
+                    // Carregar instâncias
+                    const instancesResponse = await fetch('/api/instances');
+                    const instancesData = await instancesResponse.json();
+                    setInstancias(instancesData.instances || []);
+                    setAccountToken(instancesData.accountToken || '');
+
+                    // Carregar campanhas reais da API
+                    const campaignsResponse = await fetch('/api/campanhas');
+                    const campaignsData = await campaignsResponse.json();
+                    setCampanhas(campaignsData || []);
+                } catch (error) {
+                    console.error('Erro ao carregar dados:', error);
+                    setAlert({ type: 'error', message: 'Erro ao carregar dados. Tente novamente.' });
+                } finally {
+                    setIsLoadingCampaigns(false);
+                }
+            };
+
+            const addPhoneNumber = () => {
+                const phone = newPhone.trim();
+                if (phone && !phoneNumbers.includes(phone)) {
+                    // Validar formato do número
+                    const phoneRegex = /^(\+?55)?\d{10,11}$/;
+                    if (phoneRegex.test(phone.replace(/\D/g, ''))) {
+                        setPhoneNumbers([...phoneNumbers, phone]);
+                        setNewPhone('');
+                        setAlert(null); // Limpar alertas anteriores
+                    } else {
+                        setAlert({ type: 'error', message: 'Formato de número inválido. Use: 5511999999999 ou 11999999999' });
+                    }
+                } else if (phoneNumbers.includes(phone)) {
+                    setAlert({ type: 'error', message: 'Este número já foi adicionado.' });
+                }
+            };
+
+            const removePhoneNumber = (phone) => {
+                setPhoneNumbers(phoneNumbers.filter(p => p !== phone));
+            };
+
+            const handleCampanhaChange = (campanhaId) => {
+                setSelectedCampanha(campanhaId);
+                const campanha = campanhas.find(c => c.id === campanhaId);
+                if (campanha) {
+                    setPhoneNumbers(campanha.phoneNumbers || []);
+                } else {
+                    setPhoneNumbers([]);
+                }
+            };
+
+            const updateWhatsAppPreview = () => {
+                const messagesContainer = document.getElementById('whatsapp-messages');
+                if (!messagesContainer) return;
+
+                const template = selectedTemplate;
+                const message = customMessage.trim();
+
+                console.log('Atualizando preview do WhatsApp:', { 
+                    hasTemplate: !!template, 
+                    templateName: template?.name,
+                    hasMedia: !!(template?.media?.url),
+                    mediaType: template?.media?.type,
+                    customMessage: message 
+                });
+
+                // Limpar mensagens existentes
+                messagesContainer.innerHTML = '';
+
+                if (template) {
+                    // Renderizar template selecionado
+                    renderTemplatePreview(template, messagesContainer);
+                } else if (message) {
+                    // Renderizar mensagem personalizada
+                    renderCustomMessagePreview(message, messagesContainer);
+                } else {
+                    // Mostrar placeholder
+                    renderPlaceholder(messagesContainer);
+                }
+            };
+
+            const renderTemplatePreview = (template, container) => {
+                // Mensagem de boas-vindas simulada
+                const welcomeMessage = document.createElement('div');
+                welcomeMessage.className = 'whatsapp-message received';
+                welcomeMessage.innerHTML = `
+                    <div>Olá! Como posso ajudar?</div>
+                    <div class="whatsapp-message-time">${getCurrentTime()}</div>
+                `;
+                container.appendChild(welcomeMessage);
+
+                // Template preview
+                const templateMessage = document.createElement('div');
+                templateMessage.className = 'whatsapp-message sent';
+                
+                let templateContent = '';
+                
+                // Adicionar mídia se existir
+                if (template.media && template.media.url && template.media.type) {
+                    templateContent += renderMediaPreview(template.media);
+                }
+                
+                if (template.title) {
+                    templateContent += `<div class="whatsapp-template-preview">
+                        <div class="whatsapp-template-title">${template.title}</div>
+                        <div class="whatsapp-template-message">${template.message}</div>
+                        ${template.footer ? `<div class="whatsapp-template-footer">${template.footer}</div>` : ''}
+                    </div>`;
+                } else {
+                    templateContent += template.message;
+                }
+
+                // Adicionar botões se existirem
+                if (template.buttons && template.buttons.length > 0) {
+                    templateContent += '<div class="whatsapp-buttons">';
+                    template.buttons.forEach(button => {
+                        templateContent += `<div class="whatsapp-button">${button.label}</div>`;
+                    });
+                    templateContent += '</div>';
+                }
+
+                templateMessage.innerHTML = `
+                    <div>${templateContent}</div>
+                    <div class="whatsapp-message-time">${getCurrentTime()}</div>
+                `;
+                container.appendChild(templateMessage);
+
+                // Scroll para o final
+                container.scrollTop = container.scrollHeight;
+            };
+
+            const renderMediaPreview = (media) => {
+                if (!media || !media.url) return '';
+
+                const mediaType = media.type || 'image';
+                const mediaUrl = media.url;
+                const filename = media.filename || 'arquivo';
+
+                console.log('Renderizando mídia:', { mediaType, mediaUrl: mediaUrl.substring(0, 50) + '...', filename });
+
+                switch (mediaType) {
+                    case 'image':
+                        return `
+                            <div class="whatsapp-media-preview" style="margin-bottom: 8px;">
+                                <img src="${mediaUrl}" alt="${filename}" style="max-width: 200px; max-height: 200px; border-radius: 8px; display: block; object-fit: cover;" 
+                                     onload="console.log('Imagem carregada com sucesso')"
+                                     onerror="console.log('Erro ao carregar imagem'); this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <div style="display: none; background: #2a3942; padding: 20px; border-radius: 8px; text-align: center; color: #8696a0;">
+                                    <i class="fas fa-image" style="font-size: 24px; margin-bottom: 8px;"></i>
+                                    <div>Imagem: ${filename}</div>
+                                </div>
+                            </div>
+                        `;
+                    case 'video':
+                        return `
+                            <div class="whatsapp-media-preview" style="margin-bottom: 8px;">
+                                <video controls style="max-width: 200px; border-radius: 8px; display: block;" 
+                                       onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                    <source src="${mediaUrl}" type="video/mp4">
+                                </video>
+                                <div style="display: none; background: #2a3942; padding: 20px; border-radius: 8px; text-align: center; color: #8696a0;">
+                                    <i class="fas fa-video" style="font-size: 24px; margin-bottom: 8px;"></i>
+                                    <div>Vídeo: ${filename}</div>
+                                </div>
+                            </div>
+                        `;
+                    case 'audio':
+                        return `
+                            <div class="whatsapp-media-preview" style="margin-bottom: 8px;">
+                                <audio controls style="width: 200px; display: block;">
+                                    <source src="${mediaUrl}" type="audio/mpeg">
+                                </audio>
+                                <div style="background: #2a3942; padding: 8px; border-radius: 8px; text-align: center; color: #8696a0; font-size: 12px;">
+                                    <i class="fas fa-music" style="margin-right: 4px;"></i>
+                                    ${filename}
+                                </div>
+                            </div>
+                        `;
+                    case 'document':
+                        return `
+                            <div class="whatsapp-media-preview" style="margin-bottom: 8px;">
+                                <div style="background: #2a3942; padding: 15px; border-radius: 8px; text-align: center; color: #8696a0;">
+                                    <i class="fas fa-file" style="font-size: 24px; margin-bottom: 8px;"></i>
+                                    <div style="font-weight: 600; margin-bottom: 4px;">${filename}</div>
+                                    <div style="font-size: 11px;">${media.size || 'Documento'}</div>
+                                </div>
+                            </div>
+                        `;
+                    default:
+                        return '';
+                }
+            };
+
+            const renderCustomMessagePreview = (message, container) => {
+                // Mensagem de boas-vindas simulada
+                const welcomeMessage = document.createElement('div');
+                welcomeMessage.className = 'whatsapp-message received';
+                welcomeMessage.innerHTML = `
+                    <div>Olá! Como posso ajudar?</div>
+                    <div class="whatsapp-message-time">${getCurrentTime()}</div>
+                `;
+                container.appendChild(welcomeMessage);
+
+                // Mensagem personalizada
+                const customMessage = document.createElement('div');
+                customMessage.className = 'whatsapp-message sent';
+                customMessage.innerHTML = `
+                    <div>${message}</div>
+                    <div class="whatsapp-message-time">${getCurrentTime()}</div>
+                `;
+                container.appendChild(customMessage);
+
+                // Scroll para o final
+                container.scrollTop = container.scrollHeight;
+            };
+
+            const renderPlaceholder = (container) => {
+                container.innerHTML = `
+                    <div class="whatsapp-preview-placeholder">
+                        <i class="fab fa-whatsapp"></i>
+                        <h3>Preview da Mensagem</h3>
+                        <p>Selecione um template ou digite uma mensagem personalizada para ver o preview</p>
+                    </div>
+                `;
+            };
+
+            const getCurrentTime = () => {
+                const now = new Date();
+                return now.toLocaleTimeString('pt-BR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+            };
+
+            const getSelectedTemplate = () => {
+                return selectedTemplate;
+            };
+
+            const getSelectedInstancia = () => {
+                if (selectedInstancia) {
+                    const instancia = instancias.find(i => i.id === selectedInstancia);
+                    return instancia;
+                }
+                return null;
+            };
+
+            const sendMessage = async (instanceId, token, phone, message, buttonActions, title = null, footer = null) => {
+                // Formatar o número de telefone para o padrão correto
+                let formattedPhone = phone.replace(/\D/g, ''); // Remove caracteres não numéricos
+                
+                console.log('Número original:', phone);
+                console.log('Número limpo:', formattedPhone);
+                
+                // Se não começar com 55, adicionar
+                if (!formattedPhone.startsWith('55')) {
+                    formattedPhone = '55' + formattedPhone;
+                }
+                
+                console.log('Número formatado:', formattedPhone);
+                
+                // Validar se o número tem o tamanho correto (13 dígitos com 55)
+                if (formattedPhone.length !== 13) {
+                    throw new Error(`Número de telefone inválido: ${phone} (deve ter 11 dígitos + 55). Tamanho atual: ${formattedPhone.length}`);
+                }
+                
+                // Processar botões para o formato correto da Z-API
+                let processedButtonActions = null;
+                if (buttonActions && buttonActions.length > 0) {
+                    processedButtonActions = buttonActions.map(button => {
+                        const processedButton = {
+                            id: button.id, // Manter o ID como no exemplo
+                            type: button.type,
+                            label: button.label
+                        };
+                        
+                        // Adicionar campos específicos baseados no tipo
+                        if (button.type === 'URL' && button.url) {
+                            // Garantir que a URL tenha https:// se não tiver protocolo
+                            let url = button.url;
+                            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                                url = 'https://' + url;
+                            }
+                            processedButton.url = url;
+                        } else if (button.type === 'CALL' && button.phone) {
+                            processedButton.phone = button.phone;
+                        }
+                        // Para REPLY, apenas type e label são necessários
+                        
+                        console.log('Botão processado:', processedButton);
+                        return processedButton;
+                    });
+                }
+
+                // Montar o corpo da requisição
+                const requestBody = {
+                    phone: formattedPhone,
+                    message: message
+                };
+
+                // Debug: verificar title e footer recebidos
+                console.log('Title recebido:', title);
+                console.log('Footer recebido:', footer);
+
+                // Adicionar title se existir
+                if (title && title.trim()) {
+                    requestBody.title = title.trim();
+                    console.log('Title adicionado ao requestBody:', requestBody.title);
+                }
+
+                // Adicionar footer se existir
+                if (footer && footer.trim()) {
+                    requestBody.footer = footer.trim();
+                    console.log('Footer adicionado ao requestBody:', requestBody.footer);
+                }
+
+                // Adicionar botões se existirem
+                if (processedButtonActions && processedButtonActions.length > 0) {
+                    requestBody.buttonActions = processedButtonActions;
+                }
+
+                console.log('Enviando requisição:', {
+                    url: `https://api.z-api.io/instances/${instanceId}/token/${token}/send-button-actions`,
+                    body: requestBody
+                });
+
+                const response = await fetch(`https://api.z-api.io/instances/${instanceId}/token/${token}/send-button-actions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'client-token': accountToken
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                console.log('Status da resposta:', response.status);
+                console.log('Headers da resposta:', response.headers);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Erro na API:', response.status, response.statusText);
+                    console.error('Resposta de erro:', errorText);
+                    throw new Error(`Erro na API: ${response.status} - ${response.statusText} - ${errorText}`);
+                }
+
+                const data = await response.json();
+                console.log('Resposta da API:', data);
+                return data;
+            };
+
+            const sendMessageWithImage = async (instanceId, token, phone, message, buttonActions, imageUrl, title = null, footer = null) => {
+                // Formatar o número de telefone para o padrão correto
+                let formattedPhone = phone.replace(/\D/g, ''); // Remove caracteres não numéricos
+                
+                console.log('Número original:', phone);
+                console.log('Número limpo:', formattedPhone);
+                
+                // Se não começar com 55, adicionar
+                if (!formattedPhone.startsWith('55')) {
+                    formattedPhone = '55' + formattedPhone;
+                }
+                
+                console.log('Número formatado:', formattedPhone);
+                
+                // Validar se o número tem o tamanho correto (13 dígitos com 55)
+                if (formattedPhone.length !== 13) {
+                    throw new Error(`Número de telefone inválido: ${phone} (deve ter 11 dígitos + 55). Tamanho atual: ${formattedPhone.length}`);
+                }
+                
+                // Processar botões para o formato correto da Z-API
+                let processedButtons = [];
+                if (buttonActions && buttonActions.length > 0) {
+                    processedButtons = buttonActions.map(button => ({
+                        id: button.id,
+                        label: button.label
+                    }));
+                }
+
+                // Montar o corpo da requisição para o endpoint de botões com imagem
+                const requestBody = {
+                    phone: formattedPhone,
+                    message: message,
+                    buttonList: {
+                        image: imageUrl,
+                        buttons: processedButtons
+                    }
+                };
+
+                // Debug: verificar dados recebidos
+                console.log('Title recebido:', title);
+                console.log('Footer recebido:', footer);
+                console.log('Image URL recebida:', imageUrl);
+                console.log('Botões processados:', processedButtons);
+
+                // Adicionar title se existir
+                if (title && title.trim()) {
+                    requestBody.title = title.trim();
+                    console.log('Title adicionado ao requestBody:', requestBody.title);
+                }
+
+                // Adicionar footer se existir
+                if (footer && footer.trim()) {
+                    requestBody.footer = footer.trim();
+                    console.log('Footer adicionado ao requestBody:', requestBody.footer);
+                }
+
+                console.log('=== DEBUG REQUEST BODY ===');
+                console.log('Request Body completo:', JSON.stringify(requestBody, null, 2));
+                console.log('URL da requisição:', `https://api.z-api.io/instances/${instanceId}/token/${token}/send-button-list`);
+                console.log('Headers:', {
+                    'Content-Type': 'application/json',
+                    'client-token': accountToken
+                });
+
+                const response = await fetch(`https://api.z-api.io/instances/${instanceId}/token/${token}/send-button-list`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'client-token': accountToken
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                console.log('Status da resposta:', response.status);
+                console.log('Headers da resposta:', response.headers);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Erro na API:', response.status, response.statusText);
+                    console.error('Resposta de erro:', errorText);
+                    throw new Error(`Erro na API: ${response.status} - ${response.statusText} - ${errorText}`);
+                }
+
+                const data = await response.json();
+                console.log('Resposta da API:', data);
+                return data;
+            };
+
+            // Função para verificar se uma instância está conectada
+            const checkInstanceConnection = async (instancia) => {
+                try {
+                    const response = await fetch(`https://api.z-api.io/instances/${instancia.id}/token/${instancia.token}/status`, {
+                        method: 'GET',
+                        headers: {
+                            'Client-Token': accountToken,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        return data.connected === true;
+                    }
+                    return false;
+                } catch (error) {
+                    console.error('Erro ao verificar status da instância:', error);
+                    return false;
+                }
+            };
+
+            // Função para encontrar próxima instância conectada
+            const findNextConnectedInstance = async (currentInstanceIndex) => {
+                for (let i = 0; i < instancias.length; i++) {
+                    const instancia = instancias[i];
+                    const isConnected = await checkInstanceConnection(instancia);
+                    if (isConnected) {
+                        console.log(`✅ Instância ${instancia.id} está conectada`);
+                        return { instancia, index: i };
+                    }
+                }
+                return null;
+            };
+
+
+            // Função para atualizar o perfil da instância
+            const updateInstanceProfile = async (instancia, profileData) => {
+                try {
+                    console.log('🔄 Iniciando atualização do perfil...');
+                    
+                    const results = [];
+                    const errors = [];
+
+                    // 1. Atualizar foto de perfil
+                    if (profileData.photo && profileData.photo.trim()) {
+                        try {
+                            const response = await fetch(`https://api.z-api.io/instances/${instancia.id}/token/${instancia.token}/profile-picture`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Client-Token': accountToken
+                                },
+                                body: JSON.stringify({ value: profileData.photo.trim() })
+                            });
+
+                            if (response.ok) {
+                                results.push('✅ Foto de perfil atualizada');
+                                console.log('✅ Foto de perfil atualizada com sucesso');
+                            } else {
+                                const errorData = await response.json();
+                                errors.push(`❌ Erro na foto: ${response.status} - ${JSON.stringify(errorData)}`);
+                                console.error('❌ Erro ao atualizar foto:', response.status, errorData);
+                            }
+                        } catch (error) {
+                            errors.push(`❌ Erro na foto: ${error.message}`);
+                            console.error('❌ Erro ao atualizar foto:', error);
+                        }
+                    }
+
+                    // 2. Atualizar nome de perfil
+                    if (profileData.name && profileData.name.trim()) {
+                        try {
+                            const response = await fetch(`https://api.z-api.io/instances/${instancia.id}/token/${instancia.token}/profile-name`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Client-Token': accountToken
+                                },
+                                body: JSON.stringify({ value: profileData.name.trim() })
+                            });
+
+                            if (response.ok) {
+                                results.push('✅ Nome de perfil atualizado');
+                                console.log('✅ Nome de perfil atualizado com sucesso');
+                            } else {
+                                const errorData = await response.json();
+                                errors.push(`❌ Erro no nome: ${response.status} - ${JSON.stringify(errorData)}`);
+                                console.error('❌ Erro ao atualizar nome:', response.status, errorData);
+                            }
+                        } catch (error) {
+                            errors.push(`❌ Erro no nome: ${error.message}`);
+                            console.error('❌ Erro ao atualizar nome:', error);
+                        }
+                    }
+
+                    // 3. Atualizar biografia de perfil
+                    if (profileData.bio && profileData.bio.trim()) {
+                        try {
+                            const response = await fetch(`https://api.z-api.io/instances/${instancia.id}/token/${instancia.token}/profile-description`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Client-Token': accountToken
+                                },
+                                body: JSON.stringify({ value: profileData.bio.trim() })
+                            });
+
+                            if (response.ok) {
+                                results.push('✅ Biografia de perfil atualizada');
+                                console.log('✅ Biografia de perfil atualizada com sucesso');
+                            } else {
+                                const errorData = await response.json();
+                                errors.push(`❌ Erro na biografia: ${response.status} - ${JSON.stringify(errorData)}`);
+                                console.error('❌ Erro ao atualizar biografia:', response.status, errorData);
+                            }
+                        } catch (error) {
+                            errors.push(`❌ Erro na biografia: ${error.message}`);
+                            console.error('❌ Erro ao atualizar biografia:', error);
+                        }
+                    }
+
+                    // 4. Configurar privacidade da foto para "ALL"
+                    try {
+                        const response = await fetch(`https://api.z-api.io/instances/${instancia.id}/token/${instancia.token}/privacy/photo`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Client-Token': accountToken
+                            },
+                            body: JSON.stringify({ visualizationType: 'ALL' })
+                        });
+
+                        if (response.ok) {
+                            results.push('✅ Privacidade da foto configurada');
+                            console.log('✅ Privacidade da foto configurada com sucesso');
+                        } else {
+                            const errorData = await response.json();
+                            errors.push(`❌ Erro na privacidade: ${response.status} - ${JSON.stringify(errorData)}`);
+                            console.error('❌ Erro ao configurar privacidade:', response.status, errorData);
+                        }
+                    } catch (error) {
+                        errors.push(`❌ Erro na privacidade: ${error.message}`);
+                        console.error('❌ Erro ao configurar privacidade:', error);
+                    }
+
+                    // Exibir resultado
+                    if (errors.length === 0) {
+                        console.log('✅ Perfil atualizado com sucesso!', results);
+                    } else if (results.length > 0) {
+                        console.log('⚠️ Perfil parcialmente atualizado!', results, errors);
+                    } else {
+                        console.log('❌ Erro ao atualizar perfil:', errors);
+                    }
+
+                } catch (error) {
+                    console.error('❌ Erro geral ao atualizar perfil:', error);
+                }
+            };
+
+            const startFlow = async () => {
+                if (phoneNumbers.length === 0) {
+                    setAlert({ type: 'error', message: 'Selecione pelo menos um número de telefone.' });
+                    return;
+                }
+
+                const template = getSelectedTemplate();
+                const instancia = getSelectedInstancia();
+
+                if (!instancia) {
+                    setAlert({ type: 'error', message: 'Selecione uma instância.' });
+                    return;
+                }
+
+                if (!instancia.connected) {
+                    setAlert({ type: 'error', message: 'A instância selecionada está desconectada. Conecte-a primeiro.' });
+                    return;
+                }
+
+                if (!instancia.token) {
+                    setAlert({ type: 'error', message: 'A instância selecionada não possui token. Configure o token primeiro.' });
+                    return;
+                }
+
+                if (!template && !customMessage.trim()) {
+                    setAlert({ type: 'error', message: 'Selecione um template ou escreva uma mensagem personalizada.' });
+                    return;
+                }
+
+                if (!accountToken.trim()) {
+                    setAlert({ type: 'error', message: 'Token da conta não encontrado. Verifique a configuração do instances.json.' });
+                    return;
+                }
+
+                setIsLoading(true);
+                setIsRunning(true);
+                setProgress(0);
+                setAlert(null);
+
+                try {
+                    // Atualizar perfil da instância se o template tiver dados de perfil
+                    if (template && template.profile && (template.profile.name || template.profile.photo || template.profile.bio)) {
+                        console.log('🔄 Atualizando perfil da instância com dados do template:', template.profile);
+                        await updateInstanceProfile(instancia, template.profile);
+                    }
+                    
+                    const message = template ? template.message : customMessage;
+                    const buttonActions = template ? template.buttons : [];
+
+                    console.log('Template selecionado:', template);
+                    console.log('Mensagem:', message);
+                    console.log('Botões:', buttonActions);
+
+                    let successCount = 0;
+                    let errorCount = 0;
+                    const errors = [];
+                    let currentInstance = instancia;
+                    let instanceSwitches = 0;
+
+                    // NOVO FLUXO: Enviar mensagens individualmente com verificação antes de cada envio
+                    for (let i = 0; i < phoneNumbers.length; i++) {
+                        const phone = phoneNumbers[i];
+                        
+                        try {
+                            console.log(`\n🔄 === INICIANDO ENVIO ${i + 1}/${phoneNumbers.length} ===`);
+                            console.log(`📱 Número: ${phone}`);
+                            
+                            // VERIFICAÇÃO PRÉVIA DE CONEXÃO (fora da lógica de requisição)
+                            console.log('🔍 Verificando conexão da instância antes do envio...');
+                            const isConnected = await checkInstanceConnection(currentInstance);
+                            
+                            if (!isConnected) {
+                                console.log(`⚠️ Instância ${currentInstance.id} desconectada, procurando próxima instância conectada...`);
+                                
+                                const nextInstance = await findNextConnectedInstance();
+                                if (nextInstance) {
+                                    currentInstance = nextInstance.instancia;
+                                    instanceSwitches++;
+                                    console.log(`🔄 Trocando para instância ${currentInstance.id} (${instanceSwitches}ª troca)`);
+                                    
+                                    // Atualizar perfil na nova instância se necessário
+                                    if (template && template.profile && (template.profile.name || template.profile.photo || template.profile.bio)) {
+                                        console.log('🔄 Atualizando perfil na nova instância...');
+                                        await updateInstanceProfile(currentInstance, template.profile);
+                                    }
+                                } else {
+                                    throw new Error('Nenhuma instância conectada disponível');
+                                }
+                            } else {
+                                console.log(`✅ Instância ${currentInstance.id} está conectada`);
+                            }
+                            
+                            // AGORA INICIA A LÓGICA DE REQUISIÇÃO
+                            console.log('📤 Iniciando envio da mensagem...');
+                            console.log('Instância atual:', currentInstance);
+                            console.log('Token da instância:', currentInstance.token);
+                            console.log('Token da conta:', accountToken);
+                            
+                            let result;
+                            
+                            // Debug: verificar condições para seleção de endpoint
+                            console.log('=== DEBUG SELEÇÃO DE ENDPOINT ===');
+                            console.log('selectedTemplate:', selectedTemplate);
+                            console.log('selectedTemplate?.media:', selectedTemplate?.media);
+                            console.log('selectedTemplate?.media?.url:', selectedTemplate?.media?.url);
+                            console.log('selectedTemplate?.media?.type:', selectedTemplate?.media?.type);
+                            console.log('buttonActions:', buttonActions);
+                            console.log('buttonActions?.length:', buttonActions?.length);
+                            
+                            // Verificar se o template tem mídia (imagem) e botões
+                            const hasImage = selectedTemplate?.media?.url && selectedTemplate?.media?.type === 'image';
+                            const hasButtons = buttonActions && buttonActions.length > 0;
+                            
+                            console.log('hasImage:', hasImage);
+                            console.log('hasButtons:', hasButtons);
+                            console.log('Usará sendMessageWithImage:', hasImage && hasButtons);
+                            
+                            if (hasImage && hasButtons) {
+                                console.log('Enviando mensagem com imagem e botões usando sendMessageWithImage');
+                                result = await sendMessageWithImage(
+                                    currentInstance.id, 
+                                    currentInstance.token, 
+                                    phone, 
+                                    message, 
+                                    buttonActions, 
+                                    selectedTemplate.media.url,
+                                    selectedTemplate?.title, 
+                                    selectedTemplate?.footer
+                                );
+                            } else if (hasImage && !hasButtons) {
+                                console.log('Template tem imagem mas não tem botões - criando botões vazios');
+                                // Para templates com imagem mas sem botões, criar um array vazio de botões
+                                result = await sendMessageWithImage(
+                                    currentInstance.id, 
+                                    currentInstance.token, 
+                                    phone, 
+                                    message, 
+                                    [], // array vazio de botões
+                                    selectedTemplate.media.url,
+                                    selectedTemplate?.title, 
+                                    selectedTemplate?.footer
+                                );
+                            } else {
+                                console.log('Enviando mensagem padrão usando sendMessage');
+                                result = await sendMessage(currentInstance.id, currentInstance.token, phone, message, buttonActions, selectedTemplate?.title, selectedTemplate?.footer);
+                            }
+                            
+                            console.log(`✅ Sucesso para ${phone}:`, result);
+                            successCount++;
+                            
+                            // Record successful message
+                            try {
+                                await fetch('/api/mensagens/record', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        instanciaId: currentInstance.id,
+                                        templateId: template ? template.id : null,
+                                        templateName: template ? template.name : 'Mensagem personalizada',
+                                        success: true
+                                    })
+                                });
+                            } catch (recordError) {
+                                console.warn('⚠️ Erro ao registrar mensagem:', recordError);
+                            }
+                            
+                        } catch (error) {
+                            console.error(`❌ Erro ao enviar para ${phone}:`, error);
+                            errors.push(`${phone}: ${error.message}`);
+                            errorCount++;
+                            
+                            // Record failed message
+                            try {
+                                await fetch('/api/mensagens/record', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        instanciaId: currentInstance.id,
+                                        templateId: template ? template.id : null,
+                                        templateName: template ? template.name : 'Mensagem personalizada',
+                                        success: false,
+                                        error: { message: error.message }
+                                    })
+                                });
+                            } catch (recordError) {
+                                console.warn('⚠️ Erro ao registrar mensagem:', recordError);
+                            }
+                        }
+
+                        // Atualizar progresso
+                        setProgress(((i + 1) / phoneNumbers.length) * 100);
+                        
+                        // DELAY DE 5 SEGUNDOS entre mensagens (exceto na última)
+                        if (i < phoneNumbers.length - 1) {
+                            console.log('⏳ Aguardando 5 segundos antes da próxima mensagem...');
+                            await new Promise(resolve => setTimeout(resolve, 5000));
+                        }
+                    }
+
+                    // Mostrar resultado do fluxo
+                    const instanceSwitchText = instanceSwitches > 0 ? ` (${instanceSwitches} troca${instanceSwitches > 1 ? 's' : ''} de instância)` : '';
+                    
+                    if (errorCount === 0) {
+                        setAlert({ 
+                            type: 'success', 
+                            message: `🎉 Fluxo concluído com sucesso! ${successCount} mensagens enviadas${instanceSwitchText}.` 
+                        });
+                    } else if (successCount === 0) {
+                        setAlert({ 
+                            type: 'error', 
+                            message: `❌ Falha no fluxo! Nenhuma mensagem foi enviada. Erros: ${errors.slice(0, 3).join(', ')}${errors.length > 3 ? '...' : ''}` 
+                        });
+                    } else {
+                        setAlert({ 
+                            type: 'success', 
+                            message: `⚠️ Fluxo parcialmente concluído! ${successCount} mensagens enviadas, ${errorCount} falharam${instanceSwitchText}. Erros: ${errors.slice(0, 2).join(', ')}${errors.length > 2 ? '...' : ''}` 
+                        });
+                    }
+
+                } catch (error) {
+                    console.error('Erro no fluxo:', error);
+                    setAlert({ type: 'error', message: 'Erro ao executar o fluxo. Tente novamente.' });
+                } finally {
+                    setIsLoading(false);
+                    setIsRunning(false);
+                }
+            };
+
+            return (
+                <div>
+                    {alert && (
+                        <div className={`alert ${alert.type === 'success' ? 'success' : ''}`}>
+                            {alert.message}
+                        </div>
+                    )}
+
+                    {/* Status da Configuração */}
+                    <div style={{
+                        background: 'rgba(26, 26, 46, 0.95)',
+                        backdropFilter: 'blur(10px)',
+                        borderRadius: '15px',
+                        padding: '15px',
+                        marginBottom: '20px',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <i data-lucide="settings" style={{ width: '20px', height: '20px', color: accountToken ? '#00ff88' : '#ff4757' }}></i>
+                            <span style={{ color: '#ffffff', fontWeight: '500' }}>
+                                Configuração Z-API
+                            </span>
+                        </div>
+                        <span style={{ 
+                            color: accountToken ? '#00ff88' : '#ff4757',
+                            fontSize: '0.9rem',
+                            fontWeight: '600',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px'
+                        }}>
+                            {accountToken ? (
+                                <>
+                                    <i data-lucide="check-circle" style={{ width: '16px', height: '16px' }}></i>
+                                    Token carregado
+                                </>
+                            ) : (
+                                <>
+                                    <i data-lucide="alert-circle" style={{ width: '16px', height: '16px' }}></i>
+                                    Carregando...
+                                </>
+                            )}
+                        </span>
+                    </div>
+
+
+                    <div className="flow-container">
+                        <div className="flow-blocks">
+                            {/* Bloco Campanhas */}
+                            <div className="flow-block">
+                                <div className="block-header">
+                                    <span className="block-icon">📋</span>
+                                    <h3 className="block-title">Campanhas</h3>
+                                </div>
+                                
+                                <div className="form-group">
+                                    <label>Selecionar Campanha</label>
+                                    <select 
+                                        value={selectedCampanha} 
+                                        onChange={(e) => handleCampanhaChange(e.target.value)}
+                                        disabled={isLoadingCampaigns}
+                                    >
+                                        <option value="">
+                                            {isLoadingCampaigns ? 'Carregando campanhas...' : 'Escolha uma campanha'}
+                                        </option>
+                                        {campanhas.map(campanha => (
+                                            <option key={campanha.id} value={campanha.id}>
+                                                {campanha.name} ({campanha.totalNumbers || campanha.phoneNumbers?.length || 0} números)
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {isLoadingCampaigns && (
+                                        <div style={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            gap: '8px', 
+                                            marginTop: '8px',
+                                            color: '#9ca3af',
+                                            fontSize: '0.9rem'
+                                        }}>
+                                            <div className="loading" style={{ width: '16px', height: '16px' }}></div>
+                                            Carregando campanhas...
+                                        </div>
+                                    )}
+                                    {!isLoadingCampaigns && campanhas.length === 0 && (
+                                        <div style={{ 
+                                            marginTop: '10px',
+                                            padding: '15px',
+                                            background: 'rgba(239, 68, 68, 0.1)',
+                                            border: '1px solid rgba(239, 68, 68, 0.3)',
+                                            borderRadius: '8px',
+                                            color: '#fca5a5',
+                                            fontSize: '0.9rem',
+                                            textAlign: 'center'
+                                        }}>
+                                            <i className="fas fa-exclamation-triangle" style={{ marginRight: '8px' }}></i>
+                                            Nenhuma campanha encontrada. Crie uma campanha primeiro na página de Campanhas.
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Adicionar Número Manualmente</label>
+                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                        <input
+                                            type="text"
+                                            placeholder="Ex: 5511999999999"
+                                            value={newPhone}
+                                            onChange={(e) => setNewPhone(e.target.value)}
+                                            onKeyPress={(e) => e.key === 'Enter' && addPhoneNumber()}
+                                        />
+                                        <button 
+                                            onClick={addPhoneNumber}
+                                            style={{
+                                                background: '#3b82f6',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '8px',
+                                                padding: '12px 20px',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            Adicionar
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {selectedCampanha && campanhas.find(c => c.id === selectedCampanha) && (
+                                    <div style={{ 
+                                        background: 'rgba(15, 15, 35, 0.8)', 
+                                        borderRadius: '8px', 
+                                        padding: '15px',
+                                        marginTop: '10px'
+                                    }}>
+                                        <h4 style={{ color: '#ffffff', marginBottom: '10px' }}>Detalhes da Campanha:</h4>
+                                        <div style={{ color: '#d1d5db' }}>
+                                            <div><strong>Nome:</strong> {campanhas.find(c => c.id === selectedCampanha)?.name}</div>
+                                            <div><strong>Total de Números:</strong> {campanhas.find(c => c.id === selectedCampanha)?.totalNumbers || campanhas.find(c => c.id === selectedCampanha)?.phoneNumbers?.length || 0}</div>
+                                            <div><strong>Criada em:</strong> {new Date(campanhas.find(c => c.id === selectedCampanha)?.createdAt).toLocaleDateString('pt-BR')}</div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {phoneNumbers.length > 0 && (
+                                    <div className="phone-list">
+                                        <h4 style={{ color: '#ffffff', marginBottom: '10px' }}>
+                                            Números Selecionados ({phoneNumbers.length})
+                                        </h4>
+                                        {phoneNumbers.map((phone, index) => (
+                                            <div key={index} className="phone-item">
+                                                <span className="phone-number">{phone}</span>
+                                                <button 
+                                                    className="remove-phone"
+                                                    onClick={() => removePhoneNumber(phone)}
+                                                >
+                                                    Remover
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Bloco Template */}
+                            <div className="flow-block">
+                                <div className="block-header">
+                                    <span className="block-icon">📝</span>
+                                    <h3 className="block-title">Template</h3>
+                                </div>
+                                
+                                <div className="form-group">
+                                    <label>Template Pronto</label>
+                                    <select 
+                                        value={selectedTemplate?.id || ''} 
+                                        onChange={(e) => {
+                                            const templateId = e.target.value;
+                                            if (templateId) {
+                                                const template = templates.find(t => t.id === templateId);
+                                                setSelectedTemplate(template);
+                                            } else {
+                                                setSelectedTemplate(null);
+                                            }
+                                        }}
+                                    >
+                                        <option value="">Escolha um template</option>
+                                        {templates.map(template => (
+                                            <option key={template.id} value={template.id}>
+                                                {template.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Mensagem Personalizada</label>
+                                    <textarea
+                                        placeholder="Digite sua mensagem personalizada aqui..."
+                                        value={customMessage}
+                                        onChange={(e) => setCustomMessage(e.target.value)}
+                                        disabled={!!selectedTemplate}
+                                    />
+                                </div>
+
+                                {selectedTemplate && getSelectedTemplate() && (
+                                    <div style={{ 
+                                        background: 'rgba(15, 15, 35, 0.8)', 
+                                        borderRadius: '8px', 
+                                        padding: '15px',
+                                        marginTop: '10px'
+                                    }}>
+                                        <h4 style={{ color: '#ffffff', marginBottom: '10px' }}>Preview do Template:</h4>
+                                        <div style={{ color: '#d1d5db' }}>
+                                            {getSelectedTemplate().title && (
+                                                <div style={{ fontWeight: '600', marginBottom: '8px' }}>
+                                                    {getSelectedTemplate().title}
+                                                </div>
+                                            )}
+                                            <div style={{ marginBottom: '8px' }}>
+                                                {getSelectedTemplate().message}
+                                            </div>
+                                            {getSelectedTemplate().footer && (
+                                                <div style={{ fontSize: '0.8rem', color: '#9ca3af' }}>
+                                                    {getSelectedTemplate().footer}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Bloco Instância */}
+                            <div className="flow-block">
+                                <div className="block-header">
+                                    <span className="block-icon">🔌</span>
+                                    <h3 className="block-title">Instância</h3>
+                                </div>
+                                
+                                <div className="form-group">
+                                    <label>Selecionar Instância</label>
+                                    <select 
+                                        value={selectedInstancia} 
+                                        onChange={(e) => setSelectedInstancia(e.target.value)}
+                                    >
+                                        <option value="">Escolha uma instância</option>
+                                        {instancias.map(instancia => (
+                                            <option key={instancia.id} value={instancia.id}>
+                                                <span className={`status-indicator ${instancia.connected ? 'status-online' : 'status-offline'}`}></span>
+                                                {instancia.name} ({instancia.connected ? 'Online' : 'Offline'})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {selectedInstancia && getSelectedInstancia() && (
+                                    <div style={{ 
+                                        background: 'rgba(15, 15, 35, 0.8)', 
+                                        borderRadius: '8px', 
+                                        padding: '15px',
+                                        marginTop: '10px'
+                                    }}>
+                                        <h4 style={{ color: '#ffffff', marginBottom: '10px' }}>Detalhes da Instância:</h4>
+                                        <div style={{ color: '#d1d5db' }}>
+                                            <div><strong>Nome:</strong> {getSelectedInstancia().name}</div>
+                                            <div><strong>Status:</strong> 
+                                                <span className={`status-indicator ${getSelectedInstancia().connected ? 'status-online' : 'status-offline'}`}></span>
+                                                {getSelectedInstancia().connected ? 'Online' : 'Offline'}
+                                            </div>
+                                            <div><strong>ID:</strong> {getSelectedInstancia().id}</div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {isRunning && (
+                            <div className="progress-bar">
+                                <div 
+                                    className="progress-fill" 
+                                    style={{ width: `${progress}%` }}
+                                ></div>
+                            </div>
+                        )}
+
+                        <button 
+                            className="start-flow-btn"
+                            onClick={startFlow}
+                            disabled={isLoading || phoneNumbers.length === 0}
+                        >
+                            {isLoading && <span className="loading"></span>}
+                            {isLoading ? `Executando... ${Math.round(progress)}%` : '▶️ Iniciar Fluxo'}
+                        </button>
+                        
+                        {isRunning && (
+                            <div style={{ 
+                                textAlign: 'center', 
+                                marginTop: '20px', 
+                                color: '#b8b8b8',
+                                fontSize: '0.9rem'
+                            }}>
+                                Enviando mensagens... {Math.round(progress)}% concluído
+                                <br />
+                                <small style={{ color: '#9ca3af', fontSize: '0.8rem' }}>
+                                    ⏳ Aguardando 5 segundos entre cada mensagem para estabilidade
+                                </small>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        // Renderizar o componente
+        ReactDOM.render(<MensagensAutomaticas />, document.getElementById('mensagens-automaticas-root'));
+    </script>
+
+    <script>
+        // Inicializar ícones do Lucide
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

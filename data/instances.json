@@ -1,0 +1,15 @@
+{
+  "TOKEN_CONTA": "Ff3d389a6e1dd4c5ea5bc26ac1401ba59S",
+  "INSTANCIAS": [
+    {
+      "id": "3E7419A9D3B8D03A04353A15F2D9F67D",
+      "token": "8F1930F33F118927310CFA9E",
+      "name": "instancia para testes"
+    },
+    {
+      "id": "3E7419ADDDF6703746ABC27574AD06B9",
+      "token": "681E258B1305764316CE1C69",
+      "name": "instancia testes 2"
+    }
+  ]
+}

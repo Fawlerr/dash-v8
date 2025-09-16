@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs - Dashboard WhatsApp</title>
+    
+    <!-- CSS e JS necessários -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Sidebar dinâmica -->
+    <link rel="stylesheet" href="/css/sidebar-styles.css">
+    <script src="/js/sidebar-loader.js"></script>
+    <!-- Verificação de autenticação -->
+    <script src="/js/auth-check.js"></script>
+    <!-- Efeitos tecnológicos -->
+    <link rel="stylesheet" href="/css/tech-effects.css">
+    <script src="/js/tech-effects.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%); 
+            min-height: 100vh; 
+            color: #ffffff; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        .main-content { margin-left: 250px; min-height: 100vh; padding: 20px; transition: margin-left 0.3s ease-in-out; }
+        
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+        
+        .main-panel {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .preview-panel {
+            width: 350px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .header { 
+            background: rgba(26, 26, 46, 0.95); 
+            backdrop-filter: blur(10px); 
+            border-radius: 20px; 
+            padding: 30px; 
+            margin-bottom: 30px; 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); 
+            text-align: center; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+        
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .flow-blocks {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .flow-block {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 0 15px rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .flow-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #8b5cf6, #06b6d4, #8b5cf6);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        .flow-block:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 15px 45px rgba(0, 0, 0, 0.4),
+                0 0 25px rgba(139, 92, 246, 0.4);
+        }
+        
+        .block-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .block-icon {
+            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+        
+        .block-title {
+            color: #ffffff;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #e5e7eb;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(15, 15, 35, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-online {
+            background: #00ff88;
+        }
+        
+        .status-offline {
+            background: #ff4757;
+        }
+        
+        .save-btn {
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            color: #fff;
+            border: none;
+            border-radius: 15px;
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 8px 32px rgba(139, 92, 246, 0.4),
+                0 0 20px rgba(139, 92, 246, 0.3);
+            margin: 0 auto;
+            display: block;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .save-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .save-btn:hover::before {
+            left: 100%;
+        }
+
+        .save-btn:hover {
+            background: linear-gradient(135deg, #a855f7, #0891b2);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 12px 40px rgba(139, 92, 246, 0.6),
+                0 0 25px rgba(139, 92, 246, 0.5);
+        }
+        
+        .save-btn:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .alert {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            white-space: pre-line;
+            line-height: 1.5;
+        }
+        
+        .success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+        }
+        
+        
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 10px;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .whatsapp-preview {
+            background: #111b21;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .whatsapp-header {
+            background: #2a3942;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .whatsapp-back-btn {
+            color: #00a884;
+            font-size: 20px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .whatsapp-header-title {
+            color: #e9edef;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 0;
+        }
+        
+        .whatsapp-profile-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            background: #0b141a;
+        }
+        
+        .whatsapp-profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 48px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 3px solid #2a3942;
+        }
+        
+        .whatsapp-profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .whatsapp-edit-btn {
+            background: #00a884;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 30px;
+            transition: background 0.3s ease;
+        }
+        
+        .whatsapp-edit-btn:hover {
+            background: #008f73;
+        }
+        
+        .whatsapp-profile-info {
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        .whatsapp-info-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .whatsapp-info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .whatsapp-info-icon {
+            width: 20px;
+            height: 20px;
+            color: #8696a0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .whatsapp-info-label {
+            color: #8696a0;
+            font-size: 14px;
+            font-weight: 500;
+            min-width: 60px;
+        }
+        
+        .whatsapp-info-value {
+            color: #e9edef;
+            font-size: 16px;
+            flex: 1;
+        }
+        
+        .whatsapp-preview-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #8696a0;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .whatsapp-preview-placeholder i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #25d366;
+        }
+        
+        .whatsapp-preview-placeholder h3 {
+            color: #e9edef;
+            margin-bottom: 10px;
+        }
+        
+        .whatsapp-preview-placeholder p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .instance-info {
+            background: rgba(15, 15, 35, 0.8);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .instance-info h4 {
+            color: #ffffff;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .instance-info div {
+            color: #d1d5db;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .instance-info .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar-container"></div>
+    
+    <div class="main-content">
+        <div class="container">
+            <div class="header">
+                <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 10px; background: linear-gradient(135deg, #8b5cf6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    📊 Logs do Sistema
+                </h1>
+                <p style="color: #9ca3af; font-size: 1.1rem; margin: 0;">
+                    Configure o perfil do WhatsApp e visualize os logs do sistema
+                </p>
+            </div>
+
+            <div class="content-wrapper">
+                <div class="main-panel">
+                    <div id="app"></div>
+                </div>
+                
+                <div class="preview-panel">
+                    <div class="whatsapp-preview">
+                        <div class="whatsapp-header">
+                            <i class="fas fa-arrow-left whatsapp-back-btn"></i>
+                            <div class="whatsapp-header-title">Perfil</div>
+                        </div>
+                        <div class="whatsapp-profile-content">
+                            <div class="whatsapp-profile-avatar" id="preview-avatar">
+                                <i class="fab fa-whatsapp"></i>
+                            </div>
+                            <button class="whatsapp-edit-btn">Editar</button>
+                            <div class="whatsapp-profile-info">
+                                <div class="whatsapp-info-item">
+                                    <div class="whatsapp-info-icon">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="whatsapp-info-label">Nome</div>
+                                    <div class="whatsapp-info-value" id="preview-name">WhatsApp Business</div>
+                                </div>
+                                <div class="whatsapp-info-item">
+                                    <div class="whatsapp-info-icon">
+                                        <i class="fas fa-info-circle"></i>
+                                    </div>
+                                    <div class="whatsapp-info-label">Recado</div>
+                                    <div class="whatsapp-info-value" id="preview-bio">Configure sua biografia</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const LogsApp = () => {
+            const [instancias, setInstancias] = useState([]);
+            const [selectedInstancia, setSelectedInstancia] = useState('');
+            const [profilePhotoUrl, setProfilePhotoUrl] = useState('');
+            const [profileName, setProfileName] = useState('');
+            const [profileBio, setProfileBio] = useState('');
+            const [isLoading, setIsLoading] = useState(false);
+            const [alert, setAlert] = useState(null);
+            const [accountToken, setAccountToken] = useState('');
+
+            useEffect(() => {
+                loadData();
+            }, []);
+
+            useEffect(() => {
+                updatePreview();
+            }, [profilePhotoUrl, profileName, profileBio]);
+
+            const loadData = async () => {
+                try {
+                    const response = await fetch('/api/instances');
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        setInstancias(data.instances || []);
+                        setAccountToken(data.accountToken || '');
+                        console.log('Dados carregados:', {
+                            instances: data.instances?.length || 0,
+                            accountToken: data.accountToken ? 'Carregado' : 'Não encontrado'
+                        });
+                    } else {
+                        setAlert({ type: 'error', message: 'Erro ao carregar dados: ' + (data.error || 'Erro desconhecido') });
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar dados:', error);
+                    setAlert({ type: 'error', message: 'Erro de conexão ao carregar dados.' });
+                }
+            };
+
+            const handleInstanciaChange = (instanciaId) => {
+                setSelectedInstancia(instanciaId);
+                const instancia = instancias.find(i => i.id === instanciaId);
+                if (instancia) {
+                    setProfileName(instancia.name || '');
+                    setProfileBio(instancia.bio || '');
+                    updatePreview();
+                }
+            };
+
+            const handlePhotoUrlChange = (url) => {
+                console.log('URL da foto alterada:', url);
+                setProfilePhotoUrl(url);
+                // updatePreview será chamado automaticamente pelo useEffect
+            };
+
+            const handleNameChange = (name) => {
+                setProfileName(name);
+                updatePreview();
+            };
+
+            const handleBioChange = (bio) => {
+                setProfileBio(bio);
+                updatePreview();
+            };
+
+            const updatePreview = () => {
+                console.log('Atualizando preview:', { profilePhotoUrl, profileName, profileBio });
+                
+                // Atualizar avatar
+                const avatarElement = document.getElementById('preview-avatar');
+                if (avatarElement) {
+                    if (profilePhotoUrl && profilePhotoUrl.trim() !== '') {
+                        console.log('Definindo imagem:', profilePhotoUrl);
+                        avatarElement.innerHTML = `<img src="${profilePhotoUrl}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;" onerror="console.log('Erro ao carregar imagem'); this.parentElement.innerHTML='<i class=\\'fab fa-whatsapp\\'></i>'" />`;
+                    } else {
+                        console.log('Usando ícone padrão');
+                        avatarElement.innerHTML = '<i class="fab fa-whatsapp"></i>';
+                    }
+                } else {
+                    console.error('Elemento preview-avatar não encontrado');
+                }
+
+                // Atualizar nome
+                const nameElement = document.getElementById('preview-name');
+                if (nameElement) {
+                    nameElement.textContent = profileName || 'WhatsApp Business';
+                }
+                
+                // Atualizar biografia (recado)
+                const bioElement = document.getElementById('preview-bio');
+                if (bioElement) {
+                    bioElement.textContent = profileBio || 'Configure sua biografia';
+                }
+            };
+
+            const saveProfile = async () => {
+                if (!selectedInstancia) {
+                    setAlert({ type: 'error', message: 'Selecione uma instância primeiro.' });
+                    return;
+                }
+
+                const instancia = instancias.find(i => i.id === selectedInstancia);
+                if (!instancia) {
+                    setAlert({ type: 'error', message: 'Instância não encontrada.' });
+                    return;
+                }
+
+                if (!instancia.connected) {
+                    setAlert({ type: 'error', message: 'A instância selecionada está desconectada.' });
+                    return;
+                }
+
+                if (!accountToken) {
+                    setAlert({ type: 'error', message: 'Token da conta não configurado.' });
+                    return;
+                }
+
+                setIsLoading(true);
+                setAlert(null);
+
+                try {
+                    const results = [];
+                    const errors = [];
+
+                    // 1. Atualizar foto de perfil (se fornecida)
+                    if (profilePhotoUrl && profilePhotoUrl.trim() !== '') {
+                        try {
+                            console.log('Atualizando foto de perfil:', profilePhotoUrl);
+                            const photoResponse = await fetch(`https://api.z-api.io/instances/${instancia.id}/token/${instancia.token}/profile-picture`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Client-Token': accountToken
+                                },
+                                body: JSON.stringify({
+                                    value: profilePhotoUrl.trim()
+                                })
+                            });
+
+                            if (photoResponse.ok) {
+                                results.push('✅ Foto de perfil atualizada');
+                                console.log('Foto de perfil atualizada com sucesso');
+                            } else {
+                                const errorText = await photoResponse.text();
+                                errors.push(`❌ Erro na foto: ${photoResponse.status} - ${errorText}`);
+                                console.error('Erro ao atualizar foto:', errorText);
+                            }
+                        } catch (error) {
+                            errors.push(`❌ Erro na foto: ${error.message}`);
+                            console.error('Erro ao atualizar foto:', error);
+                        }
+                    }
+
+                    // 2. Atualizar nome de perfil (se fornecido)
+                    if (profileName && profileName.trim() !== '') {
+                        try {
+                            console.log('Atualizando nome de perfil:', profileName);
+                            const nameResponse = await fetch(`https://api.z-api.io/instances/${instancia.id}/token/${instancia.token}/profile-name`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Client-Token': accountToken
+                                },
+                                body: JSON.stringify({
+                                    value: profileName.trim()
+                                })
+                            });
+
+                            if (nameResponse.ok) {
+                                results.push('✅ Nome atualizado');
+                                console.log('Nome atualizado com sucesso');
+                            } else {
+                                const errorText = await nameResponse.text();
+                                errors.push(`❌ Erro no nome: ${nameResponse.status} - ${errorText}`);
+                                console.error('Erro ao atualizar nome:', errorText);
+                            }
+                        } catch (error) {
+                            errors.push(`❌ Erro no nome: ${error.message}`);
+                            console.error('Erro ao atualizar nome:', error);
+                        }
+                    }
+
+                    // 3. Atualizar biografia (se fornecida)
+                    if (profileBio && profileBio.trim() !== '') {
+                        try {
+                            console.log('Atualizando biografia:', profileBio);
+                            const bioResponse = await fetch(`https://api.z-api.io/instances/${instancia.id}/token/${instancia.token}/profile-description`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Client-Token': accountToken
+                                },
+                                body: JSON.stringify({
+                                    value: profileBio.trim()
+                                })
+                            });
+
+                            if (bioResponse.ok) {
+                                results.push('✅ Biografia atualizada');
+                                console.log('Biografia atualizada com sucesso');
+                            } else {
+                                const errorText = await bioResponse.text();
+                                errors.push(`❌ Erro na biografia: ${bioResponse.status} - ${errorText}`);
+                                console.error('Erro ao atualizar biografia:', errorText);
+                            }
+                        } catch (error) {
+                            errors.push(`❌ Erro na biografia: ${error.message}`);
+                            console.error('Erro ao atualizar biografia:', error);
+                        }
+                    }
+
+                    // 4. Alterar privacidade da foto para visível a todos (se foto foi atualizada)
+                    if (profilePhotoUrl && profilePhotoUrl.trim() !== '') {
+                        try {
+                            console.log('Alterando privacidade da foto');
+                            const privacyResponse = await fetch(`https://api.z-api.io/instances/${instancia.id}/token/${instancia.token}/privacy/photo`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Client-Token': accountToken
+                                },
+                                body: JSON.stringify({
+                                    visualizationType: 'ALL'
+                                })
+                            });
+
+                            if (privacyResponse.ok) {
+                                results.push('✅ Privacidade da foto configurada');
+                                console.log('Privacidade da foto configurada com sucesso');
+                            } else {
+                                const errorText = await privacyResponse.text();
+                                errors.push(`❌ Erro na privacidade: ${privacyResponse.status} - ${errorText}`);
+                                console.error('Erro ao configurar privacidade:', errorText);
+                            }
+                        } catch (error) {
+                            errors.push(`❌ Erro na privacidade: ${error.message}`);
+                            console.error('Erro ao configurar privacidade:', error);
+                        }
+                    }
+
+                    // Mostrar resultado
+                    if (results.length > 0 && errors.length === 0) {
+                        setAlert({ 
+                            type: 'success', 
+                            message: `🎉 Perfil atualizado com sucesso!\n\n${results.join('\n')}` 
+                        });
+                    } else if (results.length > 0 && errors.length > 0) {
+                        setAlert({ 
+                            type: 'success', 
+                            message: `⚠️ Perfil parcialmente atualizado!\n\n${results.join('\n')}\n\n${errors.join('\n')}` 
+                        });
+                    } else if (errors.length > 0) {
+                        setAlert({ 
+                            type: 'error', 
+                            message: `❌ Erro ao atualizar perfil!\n\n${errors.join('\n')}` 
+                        });
+                    } else {
+                        setAlert({ 
+                            type: 'error', 
+                            message: 'Nenhum campo foi preenchido para atualizar.' 
+                        });
+                    }
+
+                } catch (error) {
+                    console.error('Erro geral ao salvar perfil:', error);
+                    setAlert({ 
+                        type: 'error', 
+                        message: `Erro ao salvar perfil: ${error.message}` 
+                    });
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            const getSelectedInstancia = () => {
+                if (selectedInstancia) {
+                    return instancias.find(i => i.id === selectedInstancia);
+                }
+                return null;
+            };
+
+            return (
+                <div>
+                    {alert && (
+                        <div className={`alert ${alert.type === 'success' ? 'success' : ''}`}>
+                            {alert.message}
+                        </div>
+                    )}
+
+                    {/* Status da Configuração */}
+                    <div style={{
+                        background: 'rgba(26, 26, 46, 0.95)',
+                        backdropFilter: 'blur(10px)',
+                        borderRadius: '15px',
+                        padding: '15px',
+                        marginBottom: '20px',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <i data-lucide="settings" style={{ width: '20px', height: '20px', color: accountToken ? '#00ff88' : '#ff4757' }}></i>
+                            <span style={{ color: '#ffffff', fontWeight: '500' }}>
+                                Configuração Z-API
+                            </span>
+                        </div>
+                        <span style={{ 
+                            color: accountToken ? '#00ff88' : '#ff4757',
+                            fontSize: '0.9rem',
+                            fontWeight: '600',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px'
+                        }}>
+                            {accountToken ? (
+                                <>
+                                    <i data-lucide="check-circle" style={{ width: '16px', height: '16px' }}></i>
+                                    Token carregado
+                                </>
+                            ) : (
+                                <>
+                                    <i data-lucide="alert-circle" style={{ width: '16px', height: '16px' }}></i>
+                                    Carregando...
+                                </>
+                            )}
+                        </span>
+                    </div>
+
+                    <div className="flow-container">
+                        <div className="flow-blocks">
+                            {/* Bloco Seleção de Instância */}
+                            <div className="flow-block">
+                                <div className="block-header">
+                                    <span className="block-icon">📱</span>
+                                    <h3 className="block-title">Instância</h3>
+                                </div>
+                                
+                                <div className="form-group">
+                                    <label>Selecionar Instância</label>
+                                    <select 
+                                        value={selectedInstancia} 
+                                        onChange={(e) => handleInstanciaChange(e.target.value)}
+                                    >
+                                        <option value="">Escolha uma instância</option>
+                                        {instancias.map(instancia => (
+                                            <option key={instancia.id} value={instancia.id}>
+                                                {instancia.name} - {instancia.connected ? '🟢 Online' : '🔴 Offline'}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {instancias.length === 0 && (
+                                        <div style={{ 
+                                            marginTop: '10px',
+                                            padding: '15px',
+                                            background: 'rgba(239, 68, 68, 0.1)',
+                                            border: '1px solid rgba(239, 68, 68, 0.3)',
+                                            borderRadius: '8px',
+                                            color: '#fca5a5',
+                                            fontSize: '0.9rem',
+                                            textAlign: 'center'
+                                        }}>
+                                            <i className="fas fa-exclamation-triangle" style={{ marginRight: '8px' }}></i>
+                                            Nenhuma instância encontrada. Crie uma instância primeiro na página de Instâncias.
+                                        </div>
+                                    )}
+                                </div>
+
+                                {selectedInstancia && getSelectedInstancia() && (
+                                    <div className="instance-info">
+                                        <h4>Detalhes da Instância:</h4>
+                                        <div><strong>Nome:</strong> {getSelectedInstancia().name}</div>
+                                        <div><strong>ID:</strong> {getSelectedInstancia().id}</div>
+                                        <div className="status">
+                                            <span className={`status-indicator ${getSelectedInstancia().connected ? 'status-online' : 'status-offline'}`}></span>
+                                            <strong>Status:</strong> {getSelectedInstancia().connected ? 'Conectada' : 'Desconectada'}
+                                        </div>
+                                        {getSelectedInstancia().token && (
+                                            <div><strong>Token:</strong> {getSelectedInstancia().token.substring(0, 10)}...</div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Bloco Foto de Perfil */}
+                            <div className="flow-block">
+                                <div className="block-header">
+                                    <span className="block-icon">📸</span>
+                                    <h3 className="block-title">Foto de Perfil</h3>
+                                </div>
+                                
+                                <div className="form-group">
+                                    <label>URL da Foto</label>
+                                    <input
+                                        type="url"
+                                        placeholder="https://via.placeholder.com/300x300/25d366/ffffff?text=WhatsApp"
+                                        value={profilePhotoUrl}
+                                        onChange={(e) => handlePhotoUrlChange(e.target.value)}
+                                    />
+                                    <div style={{ 
+                                        color: '#9ca3af', 
+                                        fontSize: '0.8rem', 
+                                        marginTop: '5px'
+                                    }}>
+                                        Cole a URL da imagem para usar como foto de perfil
+                                    </div>
+                                    <div style={{ 
+                                        color: '#8b5cf6', 
+                                        fontSize: '0.8rem', 
+                                        marginTop: '5px',
+                                        cursor: 'pointer',
+                                        textDecoration: 'underline'
+                                    }} onClick={() => handlePhotoUrlChange('https://via.placeholder.com/300x300/25d366/ffffff?text=WhatsApp')}>
+                                        🧪 Testar com imagem de exemplo
+                                    </div>
+                                </div>
+
+                                {profilePhotoUrl && (
+                                    <div>
+                                        <img 
+                                            src={profilePhotoUrl} 
+                                            alt="Preview" 
+                                            className="preview-image"
+                                            onError={(e) => {
+                                                e.target.style.display = 'none';
+                                                e.target.nextSibling.style.display = 'block';
+                                            }}
+                                        />
+                                        <div style={{ 
+                                            display: 'none', 
+                                            textAlign: 'center', 
+                                            color: '#9ca3af', 
+                                            padding: '20px',
+                                            background: 'rgba(15, 15, 35, 0.5)',
+                                            borderRadius: '10px',
+                                            marginTop: '10px'
+                                        }}>
+                                            <i className="fas fa-exclamation-triangle" style={{ fontSize: '24px', marginBottom: '10px' }}></i>
+                                            <div>Erro ao carregar imagem</div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Bloco Nome */}
+                            <div className="flow-block">
+                                <div className="block-header">
+                                    <span className="block-icon">👤</span>
+                                    <h3 className="block-title">Nome</h3>
+                                </div>
+                                
+                                <div className="form-group">
+                                    <label>Nome do Perfil</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Digite o nome do perfil"
+                                        value={profileName}
+                                        onChange={(e) => handleNameChange(e.target.value)}
+                                        maxLength={25}
+                                    />
+                                    <div style={{ 
+                                        color: '#9ca3af', 
+                                        fontSize: '0.8rem', 
+                                        marginTop: '5px',
+                                        textAlign: 'right'
+                                    }}>
+                                        {profileName.length}/25 caracteres
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Bloco Biografia */}
+                            <div className="flow-block">
+                                <div className="block-header">
+                                    <span className="block-icon">📝</span>
+                                    <h3 className="block-title">Biografia</h3>
+                                </div>
+                                
+                                <div className="form-group">
+                                    <label>Biografia do Perfil</label>
+                                    <textarea
+                                        placeholder="Digite a biografia do perfil"
+                                        value={profileBio}
+                                        onChange={(e) => handleBioChange(e.target.value)}
+                                        maxLength={139}
+                                        rows={4}
+                                    />
+                                    <div style={{ 
+                                        color: '#9ca3af', 
+                                        fontSize: '0.8rem', 
+                                        marginTop: '5px',
+                                        textAlign: 'right'
+                                    }}>
+                                        {profileBio.length}/139 caracteres
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Botão Salvar */}
+                        <div style={{ textAlign: 'center', marginTop: '30px' }}>
+                            <button 
+                                className="save-btn"
+                                onClick={saveProfile}
+                                disabled={isLoading || !selectedInstancia}
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <div className="loading"></div>
+                                        Salvando...
+                                    </>
+                                ) : (
+                                    'Salvar Perfil'
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<LogsApp />, document.getElementById('app'));
+    </script>
+
+    <script>
+        // Inicializar Lucide icons
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+</html>

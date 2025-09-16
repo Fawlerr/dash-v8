@@ -1,0 +1,61 @@
+{
+  "templates": [
+    {
+      "id": "1757550355786",
+      "name": "teste",
+      "title": "testando",
+      "message": "lorem ipsum dolor sit amet",
+      "footer": "lorem ipsum dolor",
+      "media": {
+        "type": null,
+        "url": null,
+        "filename": null,
+        "size": null
+      },
+      "buttons": [
+        {
+          "id": "2",
+          "type": "URL",
+          "label": "clica aqui",
+          "url": "www.google.com"
+        }
+      ],
+      "createdAt": "2025-09-11T00:25:55.786Z",
+      "updatedAt": "2025-09-11T00:41:49.539Z"
+    },
+    {
+      "id": "1757556902784",
+      "name": "teste2",
+      "title": "titulo teste",
+      "message": "mensagem teste",
+      "footer": "rodape de teste",
+      "media": {
+        "type": "image",
+        "url": "https://i.ibb.co/dsnSx78N/images-1.jpg",
+        "filename": "images-1.jpg",
+        "size": "URL Externa"
+      },
+      "buttons": [
+        {
+          "id": "2",
+          "type": "URL",
+          "label": "botão teste",
+          "url": "https://www.youtube.com/watch?v=wNKmYTmRmG4&list=RDwNKmYTmRmG4&start_radio=1"
+        },
+        {
+          "id": "2",
+          "type": "URL",
+          "label": "botão teste 2",
+          "url": "www.xvideos.com"
+        }
+      ],
+      "createdAt": "2025-09-11T02:15:02.784Z",
+      "updatedAt": "2025-09-15T15:13:50.755Z",
+      "profile": {
+        "name": "",
+        "photo": "",
+        "bio": ""
+      }
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Upload Simples</title>
+</head>
+<body>
+    <h1>Teste de Upload Simples</h1>
+    
+    <form id="uploadForm" enctype="multipart/form-data">
+        <div>
+            <label for="name">Nome do Template:</label>
+            <input type="text" id="name" name="name" value="Teste Upload" required>
+        </div>
+        
+        <div>
+            <label for="message">Mensagem:</label>
+            <textarea id="message" name="message" required>Teste de upload de imagem</textarea>
+        </div>
+        
+        <div>
+            <label for="mediaType">Tipo de Mídia:</label>
+            <select id="mediaType" name="mediaType">
+                <option value="image">Imagem</option>
+                <option value="none">Sem mídia</option>
+            </select>
+        </div>
+        
+        <div>
+            <label for="mediaFile">Arquivo de Mídia:</label>
+            <input type="file" id="mediaFile" name="mediaFile" accept="image/*">
+        </div>
+        
+        <button type="submit">Salvar Template</button>
+    </form>
+    
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('name', document.getElementById('name').value);
+            formData.append('message', document.getElementById('message').value);
+            formData.append('mediaType', document.getElementById('mediaType').value);
+            
+            const fileInput = document.getElementById('mediaFile');
+            if (fileInput.files[0]) {
+                formData.append('mediaFile', fileInput.files[0]);
+                console.log('Arquivo selecionado:', fileInput.files[0]);
+            }
+            
+            console.log('FormData contents:', Array.from(formData.entries()));
+            
+            try {
+                const response = await fetch('/api/templates', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('Response status:', response.status);
+                const result = await response.json();
+                console.log('Response data:', result);
+                
+                document.getElementById('result').innerHTML = `
+                    <h3>Resultado:</h3>
+                    <pre>${JSON.stringify(result, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('result').innerHTML = `
+                    <h3>Erro:</h3>
+                    <p>${error.message}</p>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
