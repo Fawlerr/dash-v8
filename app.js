@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: process.env.CORS_ORIGIN || '*',
   credentials: true
 }));
 app.use(express.json());
@@ -116,13 +116,14 @@ async function startServer() {
       console.log('⚠️  Aviso: Não foi possível executar limpeza automática:', cleanError.message);
     }
     
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log('🚀 Servidor iniciado com sucesso!');
       console.log(`📱 Dashboard: http://localhost:${PORT}`);
       console.log(`📱 Instâncias: http://localhost:${PORT}/instances`);
       console.log(`📱 Code Page: http://localhost:${PORT}/code`);
       console.log(`🔧 API: http://localhost:${PORT}/api`);
       console.log(`\n📋 Status: Rodando na porta ${PORT}`);
+      console.log(`🌐 Acessível externamente em: http://SEU_IP:${PORT}`);
     });
   } catch (error) {
     console.error('❌ Erro ao iniciar servidor:', error);
