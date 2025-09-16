@@ -77,18 +77,27 @@ class SidebarLoader {
 
         // Toggle sidebar no mobile
         if (mobileMenuBtn) {
-            mobileMenuBtn.addEventListener('click', () => {
+            mobileMenuBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
                 const isOpen = sidebar.classList.contains('show');
+                console.log('Toggle sidebar - isOpen:', isOpen);
+                
                 if (isOpen) {
                     // Fechar sidebar
                     sidebar.classList.remove('show');
                     sidebar.classList.add('sidebar-mobile-hidden');
+                    sidebar.style.transform = 'translateX(-100%)';
                     sidebarOverlay.classList.remove('show');
+                    console.log('Sidebar fechada');
                 } else {
                     // Abrir sidebar
                     sidebar.classList.add('show');
                     sidebar.classList.remove('sidebar-mobile-hidden');
+                    sidebar.style.transform = 'translateX(0)';
                     sidebarOverlay.classList.add('show');
+                    console.log('Sidebar aberta');
                 }
             });
         }
@@ -98,6 +107,7 @@ class SidebarLoader {
             closeSidebarBtn.addEventListener('click', () => {
                 sidebar.classList.remove('show');
                 sidebar.classList.add('sidebar-mobile-hidden');
+                sidebar.style.transform = 'translateX(-100%)';
                 sidebarOverlay.classList.remove('show');
             });
         }
@@ -107,6 +117,7 @@ class SidebarLoader {
             sidebarOverlay.addEventListener('click', () => {
                 sidebar.classList.remove('show');
                 sidebar.classList.add('sidebar-mobile-hidden');
+                sidebar.style.transform = 'translateX(-100%)';
                 sidebarOverlay.classList.remove('show');
             });
         }
@@ -118,6 +129,7 @@ class SidebarLoader {
                 if (window.innerWidth <= 768) {
                     sidebar.classList.remove('show');
                     sidebar.classList.add('sidebar-mobile-hidden');
+                    sidebar.style.transform = 'translateX(-100%)';
                     sidebarOverlay.classList.remove('show');
                 }
             });
@@ -128,6 +140,7 @@ class SidebarLoader {
             if (e.key === 'Escape') {
                 sidebar.classList.remove('show');
                 sidebar.classList.add('sidebar-mobile-hidden');
+                sidebar.style.transform = 'translateX(-100%)';
                 sidebarOverlay.classList.remove('show');
             }
         });
@@ -137,11 +150,13 @@ class SidebarLoader {
             if (window.innerWidth > 768) {
                 // Desktop: sidebar sempre visível
                 sidebar.classList.remove('show', 'sidebar-mobile-hidden');
+                sidebar.style.transform = '';
                 sidebarOverlay.classList.remove('show');
             } else {
                 // Mobile: sidebar sempre oculta por padrão
                 sidebar.classList.remove('show');
                 sidebar.classList.add('sidebar-mobile-hidden');
+                sidebar.style.transform = 'translateX(-100%)';
                 sidebarOverlay.classList.remove('show');
             }
         };
