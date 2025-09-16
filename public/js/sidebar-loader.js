@@ -47,6 +47,15 @@ class SidebarLoader {
             }
             
             this.sidebarLoaded = true;
+            
+            // FORÇAR sidebar oculta no mobile imediatamente
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar && window.innerWidth <= 768) {
+                sidebar.style.transform = 'translateX(-100%)';
+                sidebar.classList.add('sidebar-mobile-hidden');
+                sidebar.classList.remove('show');
+            }
+            
             this.initializeSidebar();
             this.initializeIcons();
             this.highlightCurrentPage();

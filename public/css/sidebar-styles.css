@@ -37,7 +37,19 @@
 
 /* Classe para garantir que a sidebar inicie oculta no mobile */
 .sidebar-mobile-hidden {
-    transform: translateX(-100%);
+    transform: translateX(-100%) !important;
+}
+
+/* Forçar sidebar oculta no mobile por padrão */
+@media (max-width: 768px) {
+    #sidebar {
+        display: block !important;
+        transform: translateX(-100%) !important;
+    }
+    
+    #sidebar.show {
+        transform: translateX(0) !important;
+    }
 }
 
 .sidebar-hidden {
@@ -140,22 +152,18 @@
 
 @media (max-width: 768px) {
     #sidebar {
-        transform: translateX(-100%);
+        transform: translateX(-100%) !important;
         width: 280px;
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
     }
     
     #sidebar.show {
-        transform: translateX(0);
-    }
-    
-    /* Garantir que a sidebar inicie sempre oculta no mobile */
-    #sidebar {
-        transform: translateX(-100%) !important;
-    }
-    
-    #sidebar.show {
         transform: translateX(0) !important;
+    }
+    
+    /* Forçar sidebar oculta por padrão no mobile */
+    #sidebar:not(.show) {
+        transform: translateX(-100%) !important;
     }
     
     .main-content {
