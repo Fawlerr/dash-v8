@@ -13,18 +13,13 @@ class PerfilManager {
     // Carrega dados do usuário
     async loadUserData() {
         try {
-            const token = localStorage.getItem('authToken');
-            const response = await fetch('/api/auth/verify', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                credentials: 'include'
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                this.populateUserData(result.user);
-            }
+            // Dados simulados do usuário (sem autenticação)
+            const userData = {
+                username: 'admin',
+                role: 'Administrador',
+                loginTime: new Date().toISOString()
+            };
+            this.populateUserData(userData);
         } catch (error) {
             console.error('Erro ao carregar dados do usuário:', error);
             this.showNotification('Erro ao carregar dados do usuário', 'error');

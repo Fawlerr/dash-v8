@@ -28,7 +28,7 @@ Edite o arquivo `.env` com suas configurações:
 
 ```env
 # Substitua pelos seus valores
-CORS_ORIGIN=https://seudominio.com
+CORS_ORIGIN=http://app.up-send.com
 JWT_SECRET=seu-jwt-secret-super-seguro-aqui-2024
 ZAPI_ACCOUNT_TOKEN=seu_token_da_zapi
 ```
@@ -70,8 +70,8 @@ cd /home/app.up-send.com/public_html/whatsapp-dashboard
 ### 3.2 Via Git (Recomendado)
 ```bash
 # No servidor
-cd /home/seudominio/public_html/whatsapp-dashboard
-git clone https://github.com/seu-usuario/seu-repositorio.git .
+cd /home/app.up-send.com/public_html/whatsapp-dashboard
+git clone https://github.com/Fawlerr/dash-v8.git .
 ```
 
 ### 3.3 Estrutura de arquivos no servidor
@@ -94,7 +94,7 @@ git clone https://github.com/seu-usuario/seu-repositorio.git .
 
 ### 4.1 Instalar dependências
 ```bash
-cd /home/seudominio/public_html/whatsapp-dashboard
+cd /home/app.up-send.com/public_html/whatsapp-dashboard
 npm install --production
 ```
 
@@ -130,10 +130,10 @@ pm2 startup
 ### 5.1 Configurar Proxy Reverso (Nginx)
 Crie o arquivo `/etc/nginx/sites-available/whatsapp-dashboard`:
 
-```nginx
+```nginxcurl http://localhost:3000/api/check-status
 server {
     listen 80;
-    server_name seudominio.com www.seudominio.com;
+    server_name app.up-send.com www.app.up-send.com;
 
     location / {
         proxy_pass http://localhost:3000;
@@ -167,7 +167,7 @@ sudo systemctl restart nginx
 sudo apt install certbot python3-certbot-nginx
 
 # Obter certificado SSL
-sudo certbot --nginx -d seudominio.com -d www.seudominio.com
+sudo certbot --nginx -d app.up-send.com -d www.app.up-send.com
 
 # Configurar renovação automática
 sudo crontab -e
@@ -208,7 +208,7 @@ pm2 stop whatsapp-dashboard
 ## 🚀 Passo 7: Teste e Validação
 
 ### 7.1 Testar aplicação
-1. Acesse `https://seudominio.com`
+1. Acesse `http://app.up-send.com`
 2. Verifique se o login funciona
 3. Teste todas as funcionalidades
 4. Verifique logs para erros
@@ -274,7 +274,7 @@ npm install --production
 #### 4. Problemas de CORS
 Verifique se o `CORS_ORIGIN` no `.env` está correto:
 ```env
-CORS_ORIGIN=https://seudominio.com
+CORS_ORIGIN=http://app.up-send.com
 ```
 
 ## 📊 Monitoramento e Manutenção
@@ -313,9 +313,9 @@ tar -xzf backup_20240101.tar.gz -C /home/seudominio/public_html/
 Seu WhatsApp Dashboard agora está rodando na Hostinger! 
 
 ### URLs de Acesso:
-- **Dashboard**: `https://seudominio.com`
-- **API**: `https://seudominio.com/api`
-- **Login**: `https://seudominio.com/login`
+- **Dashboard**: `http://app.up-send.com`
+- **API**: `http://app.up-send.com/api`
+- **Login**: `http://app.up-send.com/login`
 
 ### Próximos Passos:
 1. ✅ Configurar domínio personalizado

@@ -4,8 +4,6 @@ const fs = require('fs').promises;
 const path = require('path');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
 const config = require('../data/config');
 const { checkInstanceStatus, getInstanceStatistics, getInstanceInfo, generatePhoneCode } = require('../utils/zapi');
 
@@ -93,97 +91,6 @@ router.get('/check-status', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Authentication configuration
-const JWT_SECRET = process.env.JWT_SECRET || 'dashboard-whatsapp-secret-key-2024';
-const JWT_EXPIRES_IN = '24h';
-
-// Default admin credentials (in production, these should be in environment variables)
-const DEFAULT_ADMIN = {
-  username: 'admin',
-  password: '$2b$10$PyBz/zvgs3PWhgkgWGZ0auyal4VF0OaoWJC0yRD0qMrvIjDg.0pOC' // admin123
-};
-
-// Middleware to verify JWT token
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ error: 'Token de acesso necessário' });
-  }
-
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) {
-      return res.status(403).json({ error: 'Token inválido ou expirado' });
-    }
-    req.user = user;
-    next();
-  });
-};
-
-// Login endpoint
-router.post('/auth/login', async (req, res) => {
-  try {
-    const { username, password } = req.body;
-
-    // Validation
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Usuário e senha são obrigatórios' });
-    }
-
-    // Check credentials (in production, this should query a database)
-    if (username === DEFAULT_ADMIN.username) {
-      // Verify password
-      const isValidPassword = await bcrypt.compare(password, DEFAULT_ADMIN.password);
-      
-      if (isValidPassword) {
-        // Generate JWT token
-        const token = jwt.sign(
-          { 
-            username: username,
-            role: 'admin',
-            loginTime: new Date().toISOString()
-          },
-          JWT_SECRET,
-          { expiresIn: JWT_EXPIRES_IN }
-        );
-
-        res.json({
-          success: true,
-          message: 'Login realizado com sucesso',
-          token: token,
-          user: {
-            username: username,
-            role: 'admin'
-          }
-        });
-      } else {
-        res.status(401).json({ error: 'Credenciais inválidas' });
-      }
-    } else {
-      res.status(401).json({ error: 'Credenciais inválidas' });
-    }
-  } catch (error) {
-    console.error('Error during login:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
-  }
-});
-
-// Verify token endpoint
-router.get('/auth/verify', authenticateToken, (req, res) => {
-  res.json({
-    success: true,
-    user: req.user
-  });
-});
-
-// Logout endpoint (client-side token removal)
-router.post('/auth/logout', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Logout realizado com sucesso'
-  });
-});
 
 // Utility functions for templates management
 const templatesFilePath = path.join(__dirname, '..', 'data', 'templates.json');
